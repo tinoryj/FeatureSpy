@@ -1,0 +1,68 @@
+{
+    "ChunkerConfig": {
+        "_chunkingType": "VariableSize",
+        "_minChunkSize": 4096,
+        "_avgChunkSize": 8192,
+        "_maxChunkSize": 16384,
+        "_slidingWinSize": 48,
+        "_ReadSize": 256
+    },
+    "KeyServerConfig": {
+        "_keyBatchSize": 4096,
+        "_keyServerRArequestPort": 2559,
+        "_keyServerIP": [
+            "127.0.0.1"
+        ],
+        "_keyServerPort": [
+            7666
+        ],
+        "_keyRegressionMaxTimes": 1048576,
+        "_keyRegressionIntervals": 25920000
+    },
+    "SPConfig": {
+        "_storageServerIP": [
+            "127.0.0.1"
+        ],
+        "_storageServerPort": [
+            7668
+        ],
+        "_maxContainerSize": 8192
+    },
+    "pow": {
+        "_quoteType": 0,
+        "_iasVersion": 3,
+        "_ServerPort": 7669,
+        "_enclave_name": "pow_enclave.signed.so",
+        "_SPID": "6F8714DBCA251B114F308C708AAE9205",
+        "_iasServerType": 0,
+        "_batchSize": 4096,
+        "_PriSubscriptionKey": "b912a65603f64aee9c974a4ce218162c",
+        "_SecSubscriptionKey": "482aaca3b1664d6a8757321743adef64"
+    },
+    "km": {
+        "_quoteType": 0,
+        "_iasVersion": 3,
+        "_ServerPort": 7676,
+        "_enclave_name": "km_enclave.signed.so",
+        "_SPID": "6F8714DBCA251B114F308C708AAE9205",
+        "_iasServerType": 0,
+        "_PriSubscriptionKey": "b912a65603f64aee9c974a4ce218162c",
+        "_SecSubscriptionKey": "482aaca3b1664d6a8757321743adef64"
+    },
+    "server": {
+        "_RecipeRootPath": "Recipes/",
+        "_containerRootPath": "Containers/",
+        "_fp2ChunkDBName": "db1",
+        "_fp2MetaDBame": "db2",
+        "_raSessionKeylifeSpan": 259200000
+    },
+    "client": {
+        "_clientID": 1,
+        "_sendChunkBatchSize": 1000,
+        "_sendRecipeBatchSize": 100000
+    },
+    "FeatureSpy": {
+        "_keySeedFeatureNumber": 3,
+        "_keySeedGenFeatureThreadNumber": 3
+    }
+}
