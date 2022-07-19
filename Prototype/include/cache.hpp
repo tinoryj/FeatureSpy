@@ -4,7 +4,7 @@
 #include "boost/thread.hpp"
 #include "configure.hpp"
 #include "lruCache.hpp"
-#include <string>
+#include <bits/stdc++.h>
 
 extern Configure config;
 
@@ -13,13 +13,9 @@ using namespace std;
 class Cache {
 private:
     lru11::Cache<string, uint32_t>* Cache_;
-
     uint8_t** containerPool_;
-
     uint64_t cacheSize_ = 0;
-
     size_t currentIndex_ = 0;
-
     boost::shared_mutex mtx;
 
 public:

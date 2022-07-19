@@ -17,7 +17,7 @@ else
 fi
 
 cd ./build
-cmake ..
+cmake .. -DSGX_HW=ON
 make -j$(shell grep -c ^processor /proc/cpuinfo 2>/dev/null)
 cd ..
 mkdir -p bin/Containers bin/Recipes

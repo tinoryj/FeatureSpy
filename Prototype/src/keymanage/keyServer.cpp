@@ -324,7 +324,7 @@ void keyServer::runCTRModeMaskGenerate()
         if (raRequestFlag_ == false && offlineGenerateFlag_ == true && clientThreadCount_ == 0) {
             multiThreadCountMutex_.lock();
             mutexSessionKeyUpdate.lock();
-            cerr << "KeyServer : start offlien mask generate" << endl;
+            cerr << "KeyServer : start offline mask generate" << endl;
 #if SYSTEM_BREAK_DOWN == 1
             gettimeofday(&timestart, 0);
 #endif
@@ -336,7 +336,7 @@ void keyServer::runCTRModeMaskGenerate()
             cout << "KeyServer : offline mask generate time = " << setprecision(8) << second << " s" << endl;
 #endif
             offlineGenerateFlag_ = false;
-            cerr << "KeyServer : offlien mask generate done" << endl;
+            cerr << "KeyServer : offline mask generate done" << endl;
             mutexSessionKeyUpdate.unlock();
             multiThreadCountMutex_.unlock();
         }

@@ -120,6 +120,9 @@ void Fingerprinter::runFingerprintGen(int index)
         Data_t tempChunk;
         if (inputMQ_->done_ && inputMQ_->isEmpty()) {
             JobDoneFlag = true;
+            mutexFpGenJobFlag_.lock();
+            jobDoneFlagCounterForFpGen_++;
+            mutexFpGenJobFlag_.unlock();
         }
         if (extractMQ(tempChunk)) {
             if (tempChunk.dataType == DATA_TYPE_RECIPE) {
@@ -162,8 +165,11 @@ void Fingerprinter::runFingerprintGen(int index)
             }
         }
         if (JobDoneFlag) {
-            if (!keyClientObj_->editJobDoneFlag()) {
-                cerr << "Fingerprinter : error to set job done flag for encoder" << endl;
+            if (jobDoneFlagCounterForFpGen_ == config.getKeySeedGenFeatureThreadNumber()) {
+                if (!keyClientObj_->editJobDoneFlag()) {
+                    cerr << "Fingerprinter : current fp generation threads job done number = " << jobDoneFlagCounterForFpGen_ << endl;
+                    cerr << "Fingerprinter : error to set job done flag for encoder" << endl;
+                }
             }
             break;
         }

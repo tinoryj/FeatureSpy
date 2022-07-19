@@ -22,6 +22,10 @@ private:
     uint64_t* removeLUT_;
     KeyClient* keyClientObj_;
     CryptoPrimitive* cryptoObj_;
+
+    int jobDoneFlagCounterForFpGen_ = 0;
+    std::mutex mutexFpGenJobFlag_;
+
 #if SYSTEM_BREAK_DOWN == 1
     double* featureGenerateWorkTime;
     double* fpListGenerateWorkTime;
