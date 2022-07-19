@@ -307,7 +307,7 @@ void DataSR::runData(SSL* sslConnection)
                     restoreChunkTime += second;
 #endif
                     dataSecurityChannel_->send(sslConnection, sendBuffer, sendSize);
-                    cerr << "DataSR : send back chunks last ID = " << startID_ << endl;
+                    cerr << "DataSR : send back chunks last ID = " << startID_ << ", send data size = " << sendSize << endl;
                     // cerr << "DataSR : new start ID = " << startID_ << ", end ID = " << endID_ << endl;
                 }
                 break;

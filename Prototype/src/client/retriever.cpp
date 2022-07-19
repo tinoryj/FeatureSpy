@@ -15,6 +15,7 @@ Retriever::Retriever(string fileName, RecvDecode*& recvDecodeObjTemp)
 
 Retriever::~Retriever()
 {
+    retrieveFile_.flush();
     retrieveFile_.close();
 }
 

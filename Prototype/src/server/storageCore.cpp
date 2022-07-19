@@ -253,7 +253,7 @@ bool StorageCore::restoreRecipeAndChunk(char* recipeList, uint32_t startID, uint
                 index += sizeof(int);
                 memcpy(restoredChunkList + index, &chunkData[0], chunkSize);
                 index += chunkSize;
-                restoredChunkSize += chunkSize;
+                restoredChunkSize += (chunkSize + sizeof(int) + sizeof(uint32_t));
             }
         } else {
 #if TRACE_DRIVEN_TEST == 1
@@ -265,7 +265,7 @@ bool StorageCore::restoreRecipeAndChunk(char* recipeList, uint32_t startID, uint
             memset(restoredChunkList + index, 0, chunkSize);
             index += chunkSize;
             notFoundChunkNumber++;
-            restoredChunkSize += chunkSize;
+            restoredChunkSize += (chunkSize + sizeof(int) + sizeof(uint32_t));
 #else
             cerr << "StorageCore : can not restore chunk " << startID + i << " , chunk size = " << chunkSize << " chunk hash = " << endl;
             PRINT_BYTE_ARRAY_STORAGE_CORE(stderr, &chunkHash[0], SYSTEM_CIPHER_SIZE);

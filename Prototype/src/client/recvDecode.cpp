@@ -345,7 +345,7 @@ void RecvDecode::run()
                     cryptoObj_->decryptWithKey((u_char*)respondBuffer + sizeof(NetworkHeadStruct_t) + totalRecvSize, chunkSize, fileRecipeList_[chunkID].chunkKeyFeature, chunkPlaintData);
                 } else {
                     cryptoObj_->decryptWithKey((u_char*)respondBuffer + sizeof(NetworkHeadStruct_t) + totalRecvSize, INDICATOR_LENGTH, fileRecipeList_[chunkID].chunkKeyFeature, chunkPlaintData);
-                    cryptoObj_->decryptWithKey((u_char*)respondBuffer + sizeof(NetworkHeadStruct_t) + totalRecvSize + INDICATOR_LENGTH, chunkSize, fileRecipeList_[chunkID].chunkKeyMLE, chunkPlaintData + INDICATOR_LENGTH);
+                    cryptoObj_->decryptWithKey((u_char*)respondBuffer + sizeof(NetworkHeadStruct_t) + totalRecvSize + INDICATOR_LENGTH, chunkSize - INDICATOR_LENGTH, fileRecipeList_[chunkID].chunkKeyMLE, chunkPlaintData + INDICATOR_LENGTH);
                 }
                 RetrieverData_t newData;
                 newData.ID = chunkID;
