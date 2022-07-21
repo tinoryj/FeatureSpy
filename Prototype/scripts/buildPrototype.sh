@@ -1,5 +1,4 @@
 #!/bin/bash
-cd ./Prototype
 if [ ! -d "build" ]; then
   mkdir build
 else
