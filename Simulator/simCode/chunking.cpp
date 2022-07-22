@@ -50,70 +50,31 @@ bool encryptWithKey(u_char* dataBuffer, const int dataSize, u_char* key, u_char*
     EVP_CIPHER_CTX_cleanup(cipherctx_);
     return true;
 }
-
-bool getPrefix(u_char* firstChunkBuffer, u_char* minChunkBuffer, u_char* allChunkBuffer, int chunkSize, ofstream& outputStream)
+bool getPrefix(u_char** ChunkBufferSet, int chunkNumber, int chunkSize, ofstream& outputStream)
 {
-    int prefixLenSet[3] = { 1, 2, 4 };
-    for (int i = 0; i < 3; i++) {
-        int prefixLength = prefixLenSet[i];
-        //generate prefix
-        u_char hash[SHA256_DIGEST_LENGTH];
-        u_char content[prefixLength * PREFIX_UNIT];
-        //prefix of first hash
-        memset(hash, 0, SHA256_DIGEST_LENGTH);
-        memset(content, 0, prefixLength * PREFIX_UNIT);
+
+    int prefixLength = prefixBlockNumber;
+    //generate prefix
+    u_char hash[SHA256_DIGEST_LENGTH];
+    u_char content[prefixLength * PREFIX_UNIT];
+    memset(hash, 0, SHA256_DIGEST_LENGTH);
+    memset(content, 0, prefixLength * PREFIX_UNIT);
+    for (int j = 0; j < chunkNumber; j++) {
         if (chunkSize < prefixLength * PREFIX_UNIT) {
-            memcpy(content, firstChunkBuffer, chunkSize);
+            memcpy(content, ChunkBufferSet[j], chunkSize);
             SHA256(content, chunkSize, hash);
         } else {
-            memcpy(content, firstChunkBuffer, prefixLength * PREFIX_UNIT);
+            memcpy(content, ChunkBufferSet[j], prefixLength * PREFIX_UNIT);
             SHA256(content, prefixLength * PREFIX_UNIT, hash);
         }
-        string hashStrFirst((char*)hash, SHA256_DIGEST_LENGTH);
-        //prefix of min hash
-        memset(hash, 0, SHA256_DIGEST_LENGTH);
-        memset(content, 0, prefixLength * PREFIX_UNIT);
-        if (chunkSize < prefixLength * PREFIX_UNIT) {
-            memcpy(content, minChunkBuffer, chunkSize);
-            SHA256(content, chunkSize, hash);
-        } else {
-            memcpy(content, minChunkBuffer, prefixLength * PREFIX_UNIT);
-            SHA256(content, prefixLength * PREFIX_UNIT, hash);
-        }
-        string hashStrMin((char*)hash, SHA256_DIGEST_LENGTH);
-        //prefix of all hash
-        memset(hash, 0, SHA256_DIGEST_LENGTH);
-        memset(content, 0, prefixLength * PREFIX_UNIT);
-        if (chunkSize < prefixLength * PREFIX_UNIT) {
-            memcpy(content, allChunkBuffer, chunkSize);
-            SHA256(content, chunkSize, hash);
-        } else {
-            memcpy(content, allChunkBuffer, prefixLength * PREFIX_UNIT);
-            SHA256(content, prefixLength * PREFIX_UNIT, hash);
-        }
-        string hashStrAll((char*)hash, SHA256_DIGEST_LENGTH);
         //output
-        char chunkFirstFPrefixHexBuffer[SYSTEM_CIPHER_SIZE * 2 + 1];
-        u_char firstPBuffer[SYSTEM_CIPHER_SIZE];
-        memcpy(firstPBuffer, &hashStrFirst[0], SYSTEM_CIPHER_SIZE);
-        for (int i = 0; i < SYSTEM_CIPHER_SIZE; i++) {
-            sprintf(chunkFirstFPrefixHexBuffer + 2 * i, "%02X", firstPBuffer[i]);
+        char chunkFPrefixHexBuffer[SHA256_DIGEST_LENGTH * 2 + 1];
+        for (int index = 0; index < SHA256_DIGEST_LENGTH; index++) {
+            sprintf(chunkFPrefixHexBuffer + 2 * index, "%02X", hash[index]);
         }
-        outputStream << chunkFirstFPrefixHexBuffer << endl;
-        u_char minPBuffer[SYSTEM_CIPHER_SIZE];
-        memcpy(minPBuffer, &hashStrMin[0], SYSTEM_CIPHER_SIZE);
-        char chunkMinFPrefixHexBuffer[SYSTEM_CIPHER_SIZE * 2 + 1];
-        for (int i = 0; i < SYSTEM_CIPHER_SIZE; i++) {
-            sprintf(chunkMinFPrefixHexBuffer + 2 * i, "%02X", minPBuffer[i]);
-        }
-        outputStream << chunkMinFPrefixHexBuffer << endl;
-        u_char allPBuffer[SYSTEM_CIPHER_SIZE];
-        memcpy(allPBuffer, &hashStrAll[0], SYSTEM_CIPHER_SIZE);
-        char chunkAllFPrefixHexBuffer[SYSTEM_CIPHER_SIZE * 2 + 1];
-        for (int i = 0; i < SYSTEM_CIPHER_SIZE; i++) {
-            sprintf(chunkAllFPrefixHexBuffer + 2 * i, "%02X", allPBuffer[i]);
-        }
-        outputStream << chunkAllFPrefixHexBuffer << endl;
+        outputStream << chunkFPrefixHexBuffer << endl;
+        memset(hash, 0, SHA256_DIGEST_LENGTH);
+        memset(content, 0, prefixLength * PREFIX_UNIT);
     }
     return true;
 }
@@ -123,7 +84,7 @@ bool getFeaturePrefix(FeatureGen* featureGenObj, u_char* chunkBuffer, int chunkS
     // generate features
     vector<uint64_t> baselineFeatureList;
     featureGenObj->getFeatureList(chunkBuffer, chunkSize, baselineFeatureList);
-    vector<string> baselineSFList, baselineSFListSorted;
+    vector<string> baselineSFList;
     for (int i = 0; i < baselineFeatureList.size(); i += FEATURE_NUMBER_PER_SF) {
         u_char superFeature[SHA256_DIGEST_LENGTH];
         u_char featuresBuffer[FEATURE_NUMBER_PER_SF * sizeof(uint64_t)];
@@ -133,44 +94,32 @@ bool getFeaturePrefix(FeatureGen* featureGenObj, u_char* chunkBuffer, int chunkS
         SHA256(featuresBuffer, FEATURE_NUMBER_PER_SF * sizeof(uint64_t), superFeature);
         string SFStr((char*)superFeature, SHA256_DIGEST_LENGTH);
         baselineSFList.push_back(SFStr);
-        baselineSFListSorted.push_back(SFStr);
     }
-    sort(baselineSFListSorted.begin(), baselineSFListSorted.end());
-    // generate baseline cipher
-    u_char baselineAllFeatureBuffer[SF_NUMBER * SHA256_DIGEST_LENGTH], baselineAllFeatureHashBuffer[SHA256_DIGEST_LENGTH];
-    for (int i = 0; i < SF_NUMBER; i++) {
-        memcpy(baselineAllFeatureBuffer + i * SHA256_DIGEST_LENGTH, &baselineSFList[i][0], SHA256_DIGEST_LENGTH);
+    u_char** baselineCipherAll;
+    baselineCipherAll = (u_char**)malloc(featureNumber * sizeof(u_char*));
+    for (int i = 0; i < featureNumber; i++) {
+        baselineCipherAll[i] = (u_char*)malloc(chunkSize * sizeof(u_char));
     }
-    SHA256(baselineAllFeatureBuffer, SF_NUMBER * SHA256_DIGEST_LENGTH, baselineAllFeatureHashBuffer);
-    u_char baselineCipherMin[chunkSize], baselineCipherFirst[chunkSize], baselineCipherAll[chunkSize];
-    encryptWithKey(chunkBuffer, chunkSize, (u_char*)&baselineSFListSorted[0][0], baselineCipherMin);
-    encryptWithKey(chunkBuffer, chunkSize, (u_char*)&baselineSFList[0][0], baselineCipherFirst);
-    encryptWithKey(chunkBuffer, chunkSize, baselineAllFeatureHashBuffer, baselineCipherAll);
+    for (int i = 1; i < featureNumber + 1; i++) {
+        u_char baselineFeatureBuffer[i * SHA256_DIGEST_LENGTH], baselineFeatureHashBuffer[SHA256_DIGEST_LENGTH];
+        for (int featureIndex = 0; featureIndex < i; featureIndex++) {
+            memcpy(baselineFeatureBuffer + featureIndex * SHA256_DIGEST_LENGTH, &baselineSFList[featureIndex][0], SHA256_DIGEST_LENGTH);
+        }
+        SHA256(baselineFeatureBuffer, i * SHA256_DIGEST_LENGTH, baselineFeatureHashBuffer);
+        encryptWithKey(chunkBuffer, chunkSize, baselineFeatureHashBuffer, baselineCipherAll[i - 1]);
+        //out features
+        char featureHexBuffer[SHA256_DIGEST_LENGTH * 2 + 1];
+        for (int printIndex = 0; printIndex < SHA256_DIGEST_LENGTH; printIndex++) {
+            sprintf(featureHexBuffer + 2 * printIndex, "%02X", baselineFeatureHashBuffer[printIndex]);
+        }
+        outputStream << featureHexBuffer << endl;
+    }
+    getPrefix(baselineCipherAll, featureNumber, chunkSize, outputStream);
 
-    //out features
-    u_char firstFBuffer[SYSTEM_CIPHER_SIZE];
-    memcpy(firstFBuffer, &baselineSFList[0][0], SYSTEM_CIPHER_SIZE);
-    char chunkFirstFHexBuffer[SYSTEM_CIPHER_SIZE * 2 + 1];
-    for (int i = 0; i < SYSTEM_CIPHER_SIZE; i++) {
-        sprintf(chunkFirstFHexBuffer + 2 * i, "%02X", firstFBuffer[i]);
+    for (int i = 0; i < featureNumber; i++) {
+        free(baselineCipherAll[i]);
     }
-    outputStream << chunkFirstFHexBuffer << endl;
-    u_char minFBuffer[SYSTEM_CIPHER_SIZE];
-    memcpy(minFBuffer, &baselineSFListSorted[0][0], SYSTEM_CIPHER_SIZE);
-    char chunkMinFHexBuffer[SYSTEM_CIPHER_SIZE * 2 + 1];
-    for (int i = 0; i < SYSTEM_CIPHER_SIZE; i++) {
-        sprintf(chunkMinFHexBuffer + 2 * i, "%02X", minFBuffer[i]);
-    }
-    outputStream << chunkMinFHexBuffer << endl;
-    u_char allFBuffer[SYSTEM_CIPHER_SIZE];
-    memcpy(allFBuffer, baselineAllFeatureHashBuffer, SYSTEM_CIPHER_SIZE);
-    char chunkAllFHexBuffer[SYSTEM_CIPHER_SIZE * 2 + 1];
-    for (int i = 0; i < SYSTEM_CIPHER_SIZE; i++) {
-        sprintf(chunkAllFHexBuffer + 2 * i, "%02X", allFBuffer[i]);
-    }
-    outputStream << chunkAllFHexBuffer << endl;
-
-    getPrefix(baselineCipherFirst, baselineCipherMin, baselineCipherAll, chunkSize, outputStream);
+    free(baselineCipherAll);
     return true;
 }
 

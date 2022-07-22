@@ -88,16 +88,16 @@ if __name__ == "__main__":
     for i in tqdm(range(1, uniqueFileSizeNumber + 1)):
         tmp_freq = ZipfNormalizedFreq(zipf_divider, i, a);
         freq_list.append(tmp_freq)
-    print("sum: {sum_val}".format(sum_val=sum(freq_list)))
-    print("Low freq = ", freq_list[uniqueFileSizeNumber-1])
-    print(freq_list)
+    # print("sum: {sum_val}".format(sum_val=sum(freq_list)))
+    # print("Low freq = ", freq_list[uniqueFileSizeNumber-1])
+    # print(freq_list)
     totalSize = 0
     for i in range(8, 1024):
         totalSize = totalSize + freq_list[i-8] * i
-    print("Origin size (KiB) = ", totalSize)
-    print("Target size (MiB) = ", targetSnapSize)
+    # print("Origin size (KiB) = ", totalSize)
+    # print("Target size (MiB) = ", targetSnapSize)
     totalGenerateFileNumber = round(targetSnapSize * 1024 / totalSize)
-    print("Total generate number = ", totalGenerateFileNumber)
+    print("Total generate file number = ", totalGenerateFileNumber)
     temp = 0
     tempSize = 0
     output_file = open(output_file_name, mode='w')

@@ -56,31 +56,29 @@ bool encryptWithKey(u_char* dataBuffer, const int dataSize, u_char* key, u_char*
 
 bool getPrefix(u_char** ChunkBufferSet, int chunkNumber, int chunkSize, ofstream& outputStream)
 {
-    int prefixLenSet[1] = { 2 };
-    for (int i = 0; i < 1; i++) {
-        int prefixLength = prefixLenSet[i];
-        //generate prefix
-        u_char hash[SHA256_DIGEST_LENGTH];
-        u_char content[prefixLength * PREFIX_UNIT];
+
+    int prefixLength = prefixBlockNumber;
+    //generate prefix
+    u_char hash[SHA256_DIGEST_LENGTH];
+    u_char content[prefixLength * PREFIX_UNIT];
+    memset(hash, 0, SHA256_DIGEST_LENGTH);
+    memset(content, 0, prefixLength * PREFIX_UNIT);
+    for (int j = 0; j < chunkNumber; j++) {
+        if (chunkSize < prefixLength * PREFIX_UNIT) {
+            memcpy(content, ChunkBufferSet[j], chunkSize);
+            SHA256(content, chunkSize, hash);
+        } else {
+            memcpy(content, ChunkBufferSet[j], prefixLength * PREFIX_UNIT);
+            SHA256(content, prefixLength * PREFIX_UNIT, hash);
+        }
+        //output
+        char chunkFPrefixHexBuffer[SHA256_DIGEST_LENGTH * 2 + 1];
+        for (int index = 0; index < SHA256_DIGEST_LENGTH; index++) {
+            sprintf(chunkFPrefixHexBuffer + 2 * index, "%02X", hash[index]);
+        }
+        outputStream << chunkFPrefixHexBuffer << endl;
         memset(hash, 0, SHA256_DIGEST_LENGTH);
         memset(content, 0, prefixLength * PREFIX_UNIT);
-        for (int j = 0; j < chunkNumber; j++) {
-            if (chunkSize < prefixLength * PREFIX_UNIT) {
-                memcpy(content, ChunkBufferSet[j], chunkSize);
-                SHA256(content, chunkSize, hash);
-            } else {
-                memcpy(content, ChunkBufferSet[j], prefixLength * PREFIX_UNIT);
-                SHA256(content, prefixLength * PREFIX_UNIT, hash);
-            }
-            //output
-            char chunkFPrefixHexBuffer[SHA256_DIGEST_LENGTH * 2 + 1];
-            for (int index = 0; index < SHA256_DIGEST_LENGTH; index++) {
-                sprintf(chunkFPrefixHexBuffer + 2 * index, "%02X", hash[index]);
-            }
-            outputStream << chunkFPrefixHexBuffer << endl;
-            memset(hash, 0, SHA256_DIGEST_LENGTH);
-            memset(content, 0, prefixLength * PREFIX_UNIT);
-        }
     }
     return true;
 }

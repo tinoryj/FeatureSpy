@@ -19,7 +19,7 @@ The simulator is used to run the experiments in §VI.B in our paper. It includes
 FeatureSpy simulator is developed under Ubuntu 20.04.3 LTS and depends on the following packages that need to be installed by the default `apt` package management tool.
 
 ```shell
-sudo apt install -y build-essential openssl libssl-dev clang llvm python curl git golang jq
+sudo apt install -y build-essential openssl libssl-dev clang llvm python python3 curl git golang jq
 ```
 
 ### Exp#1: SyntheticSnapshots

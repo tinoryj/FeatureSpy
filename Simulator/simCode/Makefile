@@ -2,14 +2,19 @@ CC = clang++
 CFLAGS = -O3
 LIBS = -lcrypto -lssl
 INCLUDES =-I./
-MAIN_OBJS = baselineSnapGen swappedSnapGen windowCheck snapCheck mixedFilesGen processWindowCheckResult
+MAIN_OBJS = chunking baselineSnapGen swappedSnapGen  mixedFilesGenSYN mixedFilesGen windowCheck snapCheck processWindowCheckResult genDetectionRate
+all: chunking baselineSnapGen swappedSnapGen mixedFilesGenSYN mixedFilesGen windowCheck snapCheck processWindowCheckResult genDetectionRate
 
-all: baselineSnapGen swappedSnapGen windowCheck snapCheck mixedFilesGen processWindowCheckResult
-
+genDetectionRate: ./genDetectionRate.cpp
+	$(CC) $(CFLAGS) -o genDetectionRate genDetectionRate.cpp $(INCLUDES) $(LIBS)
+chunking: ./chunking.cpp
+	$(CC) $(CFLAGS) -o chunking chunking.cpp $(INCLUDES) $(LIBS)
 baselineSnapGen: ./baselineSnapGen.cpp
 	$(CC) $(CFLAGS) -o baselineSnapGen baselineSnapGen.cpp $(INCLUDES) $(LIBS)
 swappedSnapGen: ./swappedSnapGen.cpp
 	$(CC) $(CFLAGS) -o swappedSnapGen swappedSnapGen.cpp $(INCLUDES) $(LIBS)
+mixedFilesGenSYN: ./mixedFilesGenSYN.cpp
+	$(CC) $(CFLAGS) -o mixedFilesGenSYN mixedFilesGenSYN.cpp $(INCLUDES) $(LIBS)
 mixedFilesGen: ./mixedFilesGen.cpp
 	$(CC) $(CFLAGS) -o mixedFilesGen mixedFilesGen.cpp $(INCLUDES) $(LIBS)
 windowCheck: ./windowCheck.cpp

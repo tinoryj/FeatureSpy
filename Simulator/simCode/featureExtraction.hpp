@@ -5,10 +5,11 @@
 using namespace std;
 
 #define SYSTEM_CIPHER_SIZE 32
-#define FEATURE_NUMBER 16
+#define FEATURE_NUMBER 12
 #define FEATURE_NUMBER_PER_SF 4
 #define SF_NUMBER FEATURE_NUMBER / FEATURE_NUMBER_PER_SF
-
+int featureNumber = SF_NUMBER;
+int prefixBlockNumber = 2;
 class FeatureGen {
 private:
     /*VarSize chunking*/

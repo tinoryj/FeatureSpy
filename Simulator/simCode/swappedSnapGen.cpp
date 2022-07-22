@@ -7,8 +7,8 @@
 using namespace std;
 #define PREFIX_UNIT 16 // block unit
 #define SYSTEM_CIPHER_SIZE 32
-#define setbit(x, y) x |= (1 << y) //将X的第Y位置1
-#define clrbit(x, y) x &= !(1 << y) //将X的第Y位清0
+#define setbit(x, y) x |= (1 << y)
+#define clrbit(x, y) x &= !(1 << y)
 int chunkID = 0;
 int swapAbleChunkNumber = 0;
 u_char targetByteArray[256];
@@ -58,31 +58,29 @@ bool encryptWithKey(u_char* dataBuffer, const int dataSize, u_char* key, u_char*
 
 bool getPrefix(u_char** ChunkBufferSet, int chunkNumber, int chunkSize, ofstream& outputStream)
 {
-    int prefixLenSet[1] = { 2 };
-    for (int i = 0; i < 1; i++) {
-        int prefixLength = prefixLenSet[i];
-        //generate prefix
-        u_char hash[SHA256_DIGEST_LENGTH];
-        u_char content[prefixLength * PREFIX_UNIT];
+
+    int prefixLength = prefixBlockNumber;
+    //generate prefix
+    u_char hash[SHA256_DIGEST_LENGTH];
+    u_char content[prefixLength * PREFIX_UNIT];
+    memset(hash, 0, SHA256_DIGEST_LENGTH);
+    memset(content, 0, prefixLength * PREFIX_UNIT);
+    for (int j = 0; j < chunkNumber; j++) {
+        if (chunkSize < prefixLength * PREFIX_UNIT) {
+            memcpy(content, ChunkBufferSet[j], chunkSize);
+            SHA256(content, chunkSize, hash);
+        } else {
+            memcpy(content, ChunkBufferSet[j], prefixLength * PREFIX_UNIT);
+            SHA256(content, prefixLength * PREFIX_UNIT, hash);
+        }
+        //output
+        char chunkFPrefixHexBuffer[SHA256_DIGEST_LENGTH * 2 + 1];
+        for (int index = 0; index < SHA256_DIGEST_LENGTH; index++) {
+            sprintf(chunkFPrefixHexBuffer + 2 * index, "%02X", hash[index]);
+        }
+        outputStream << chunkFPrefixHexBuffer << endl;
         memset(hash, 0, SHA256_DIGEST_LENGTH);
         memset(content, 0, prefixLength * PREFIX_UNIT);
-        for (int j = 0; j < chunkNumber; j++) {
-            if (chunkSize < prefixLength * PREFIX_UNIT) {
-                memcpy(content, ChunkBufferSet[j], chunkSize);
-                SHA256(content, chunkSize, hash);
-            } else {
-                memcpy(content, ChunkBufferSet[j], prefixLength * PREFIX_UNIT);
-                SHA256(content, prefixLength * PREFIX_UNIT, hash);
-            }
-            //output
-            char chunkFPrefixHexBuffer[SHA256_DIGEST_LENGTH * 2 + 1];
-            for (int index = 0; index < SHA256_DIGEST_LENGTH; index++) {
-                sprintf(chunkFPrefixHexBuffer + 2 * index, "%02X", hash[index]);
-            }
-            outputStream << chunkFPrefixHexBuffer << endl;
-            memset(hash, 0, SHA256_DIGEST_LENGTH);
-            memset(content, 0, prefixLength * PREFIX_UNIT);
-        }
     }
     return true;
 }
@@ -257,12 +255,12 @@ int main(int argv, char* argc[])
             }
             generateFakeFile(baseChunkBuffer, chunkSize, modifyPosVec, modifyLength, tempChunk);
             chunking(tempChunk, chunkSize, featureGenObj, chunkInfo);
-            for (int index = 0; index < 10; index++) {
+            for (int index = 0; index < 2 + featureNumber * 2; index++) {
                 getline(originChunkInfo, currentLineStr);
             }
         } else {
             chunkInfo << currentLineStr << endl;
-            for (int index = 0; index < 10; index++) {
+            for (int index = 0; index < 2 + featureNumber * 2; index++) {
                 getline(originChunkInfo, currentLineStr);
                 chunkInfo << currentLineStr << endl;
             }

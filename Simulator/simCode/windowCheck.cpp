@@ -23,7 +23,7 @@ int main(int argv, char* argc[])
     string currentLine;
     uint64_t currentWindowCount = 0;
 
-    unordered_map<string, vector<uint64_t>> prefixCounter[4], dedupLicationMap, featureCounter[4];
+    unordered_map<string, vector<uint64_t>> prefixCounter[featureNumber], dedupLicationMap, featureCounter[featureNumber];
 
     gettimeofday(&timestart, NULL);
 

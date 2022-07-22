@@ -5,8 +5,8 @@
 #include <openssl/sha.h>
 #include <sys/time.h>
 using namespace std;
-#define setbit(x, y) x |= (1 << y) //将X的第Y位置1
-#define clrbit(x, y) x &= !(1 << y) //将X的第Y位清0
+#define setbit(x, y) x |= (1 << y)
+#define clrbit(x, y) x &= !(1 << y)
 #define PREFIX_UNIT 16 // block unit
 
 bool encryptWithKey(u_char* dataBuffer, const int dataSize, u_char* key, u_char* ciphertext)
@@ -54,31 +54,29 @@ bool encryptWithKey(u_char* dataBuffer, const int dataSize, u_char* key, u_char*
 
 bool getPrefix(u_char** ChunkBufferSet, int chunkNumber, int chunkSize, ofstream& outputStream)
 {
-    int prefixLenSet[1] = { 2 };
-    for (int i = 0; i < 1; i++) {
-        int prefixLength = prefixLenSet[i];
-        //generate prefix
-        u_char hash[SHA256_DIGEST_LENGTH];
-        u_char content[prefixLength * PREFIX_UNIT];
+
+    int prefixLength = prefixBlockNumber;
+    //generate prefix
+    u_char hash[SHA256_DIGEST_LENGTH];
+    u_char content[prefixLength * PREFIX_UNIT];
+    memset(hash, 0, SHA256_DIGEST_LENGTH);
+    memset(content, 0, prefixLength * PREFIX_UNIT);
+    for (int j = 0; j < chunkNumber; j++) {
+        if (chunkSize < prefixLength * PREFIX_UNIT) {
+            memcpy(content, ChunkBufferSet[j], chunkSize);
+            SHA256(content, chunkSize, hash);
+        } else {
+            memcpy(content, ChunkBufferSet[j], prefixLength * PREFIX_UNIT);
+            SHA256(content, prefixLength * PREFIX_UNIT, hash);
+        }
+        //output
+        char chunkFPrefixHexBuffer[SHA256_DIGEST_LENGTH * 2 + 1];
+        for (int index = 0; index < SHA256_DIGEST_LENGTH; index++) {
+            sprintf(chunkFPrefixHexBuffer + 2 * index, "%02X", hash[index]);
+        }
+        outputStream << chunkFPrefixHexBuffer << endl;
         memset(hash, 0, SHA256_DIGEST_LENGTH);
         memset(content, 0, prefixLength * PREFIX_UNIT);
-        for (int j = 0; j < chunkNumber; j++) {
-            if (chunkSize < prefixLength * PREFIX_UNIT) {
-                memcpy(content, ChunkBufferSet[j], chunkSize);
-                SHA256(content, chunkSize, hash);
-            } else {
-                memcpy(content, ChunkBufferSet[j], prefixLength * PREFIX_UNIT);
-                SHA256(content, prefixLength * PREFIX_UNIT, hash);
-            }
-            //output
-            char chunkFPrefixHexBuffer[SHA256_DIGEST_LENGTH * 2 + 1];
-            for (int index = 0; index < SHA256_DIGEST_LENGTH; index++) {
-                sprintf(chunkFPrefixHexBuffer + 2 * index, "%02X", hash[index]);
-            }
-            outputStream << chunkFPrefixHexBuffer << endl;
-            memset(hash, 0, SHA256_DIGEST_LENGTH);
-            memset(content, 0, prefixLength * PREFIX_UNIT);
-        }
     }
     return true;
 }
@@ -225,12 +223,12 @@ int main(int argv, char* argc[])
     }
     // generate base file done
     int rawFileNumber = fileChunkNumberVec.size();
-    int fakeFileNumber = modifyPos * modifyTimes;
+    int fakeFileNumber = modifyTimes;
     int fakeFileNumberPerSlot = fakeFileNumber / (rawFileNumber + 1);
 
     srand(randomSeed);
     ofstream chunkInfo;
-    chunkInfo.open(baseFileSizeStr + "-" + modifyPosStr + "-" + modifyLengthStr + "-" + modifyTimesStr + "-" + randomeSeedStr + ".chunkInfo", ios::out);
+    chunkInfo.open(baseFileSizeStr + "-" + modifyPosStr + "-" + modifyLengthStr + "-" + to_string(fakeFileNumber) + "-" + randomeSeedStr + ".chunkInfo", ios::out);
 
     if (fakeFileNumberPerSlot == 0) {
         cerr << "Raw files' number > fake files' number" << endl;
@@ -242,7 +240,7 @@ int main(int argv, char* argc[])
         for (int i = 0; i < fakeFileNumber; i++) {
             for (int j = 0; j < rawFileNumberPerSlot; j++) {
                 for (int j = 0; j < fileChunkNumberVec[rawFileIndex]; j++) {
-                    for (int index = 0; index < 11; index++) {
+                    for (int index = 0; index < 3 + featureNumber * 2; index++) {
                         string tempLine;
                         getline(chunkListStream, tempLine);
                         chunkInfo << tempLine << endl;
@@ -268,7 +266,7 @@ int main(int argv, char* argc[])
         if (rawFileNumber > generatedFileNumber) {
             for (int i = 0; i < rawFileNumber - generatedFileNumber; i++) {
                 for (int j = 0; j < fileChunkNumberVec[rawFileIndex]; j++) {
-                    for (int index = 0; index < 11; index++) {
+                    for (int index = 0; index < 3 + featureNumber * 2; index++) {
                         string tempLine;
                         getline(chunkListStream, tempLine);
                         chunkInfo << tempLine << endl;
@@ -299,7 +297,7 @@ int main(int argv, char* argc[])
                 generatedFileNumber++;
             }
             for (int j = 0; j < fileChunkNumberVec[i]; j++) {
-                for (int index = 0; index < 11; index++) {
+                for (int index = 0; index < 3 + featureNumber * 2; index++) {
                     string tempLine;
                     getline(chunkListStream, tempLine);
                     chunkInfo << tempLine << endl;
