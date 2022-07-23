@@ -192,12 +192,12 @@ int main(int argv, char* argc[])
     }
     targetSwapChunkStream.close();
     targetSwapChunkStream.clear();
-    string randomSeed(argc[2]);
+    string randomSeed(argc[6]);
     srand(stoi(randomSeed));
     // random target chunk
     random_shuffle(targetSwapChunkList.begin(), targetSwapChunkList.end());
     cerr << "Target total chunk number = " << totalChunkNumber << endl;
-    string swapRatioStr(argc[3]);
+    string swapRatioStr(argc[5]);
     double swapRatio = stod(swapRatioStr);
     int totalSwapChunkNumber = ceil(totalChunkNumber * swapRatio);
     set<int> targetSwapChunkIDSet;
@@ -208,15 +208,15 @@ int main(int argv, char* argc[])
     cerr << endl;
     cerr << "Target swap chunk number = " << targetSwapChunkIDSet.size() << endl;
     // gen base chunk
-    string targetChunkSizeStr(argc[4]);
+    string targetChunkSizeStr(argc[2]);
     int chunkSize = stoi(targetChunkSizeStr);
     u_char baseChunkBuffer[chunkSize];
     memset(baseChunkBuffer, 0, 1);
     for (int i = 0; i < chunkSize; i++) {
         baseChunkBuffer[i] = targetByteArray[rand() % 256];
     }
-    string modifyPosStr(argc[5]);
-    string modifyLengthStr(argc[6]);
+    string modifyPosStr(argc[3]);
+    string modifyLengthStr(argc[4]);
     int modifyPos = stoi(modifyPosStr);
     int modifyLength = stoi(modifyLengthStr);
     // processing

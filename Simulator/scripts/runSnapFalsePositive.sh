@@ -1,5 +1,5 @@
 #!/bin/bash
-targetRunningTimes=1 # Total random tests number
+targetRunningTimes=100 # Total random tests number
 zipfA='1.0'
 snapSize='1024' # Unit: MiB
 swapRatioSet=('0.01' '0.0125' '0.015' '0.0175' '0.02') # 'r' in paper 
@@ -24,7 +24,7 @@ for modifyPos in ${modifyPosSet[@]}; do
         for swapRatio in ${swapRatioSet[@]}; do
             for randomSeed in $(seq 1 $targetRunningTimes); do
                 echo "x = ${modifyPos}; y = ${modifylength}; r = ${swapRatio}; random seed = ${randomSeed}."
-                ./swappedSnapGen syn_zipf_${zipfA} ${randomSeed} ${swapRatio} ${chunkSize} ${modifyPos} ${modifylength}
+                ./swappedSnapGen syn_zipf_${zipfA} ${chunkSize} ${modifyPos} ${modifylength} ${swapRatio} ${randomSeed}  
                 target="syn_zipf_${zipfA}-Seed-${randomSeed}-Ratio-${swapRatio}-Pos-${modifyPos}-Len-${modifylength}"
                 # ./snapCheck syn_zipf_${zipfA}.swap.chunkInfo > "./${target}-swaped-logical.csv"
                 for windowSize in ${windowsSet[@]}; do
@@ -36,7 +36,7 @@ for modifyPos in ${modifyPosSet[@]}; do
     done
 done
 
-    
+echo "Process results:"
 for modifyPos in ${modifyPosSet[@]}; do
     for modifylength in ${modifylengthSet[@]}; do
         for swapRatio in ${swapRatioSet[@]}; do
@@ -51,3 +51,15 @@ for modifyPos in ${modifyPosSet[@]}; do
 done
 
 cp genDetectionRate ../SYNFalseResults/
+cd ../SYNFalseResults
+for modifyPos in ${modifyPosSet[@]}; do
+    for modifylength in ${modifylengthSet[@]}; do
+        for swapRatio in ${swapRatioSet[@]}; do
+            target="Snapshot size = ${snapSize} MiB, swapped ratio (r) = ${swapRatio}, modify pos (x) = ${modifyPos}, modify length (y) = ${modifylength}"
+            echo $target
+            for windowSize in ${windowsSet[@]}; do
+                ./genDetectionRate FalsePositive-x-${modifyPos}-y-${modifylength}-r-${swapRatio}-Window-${windowSize}.csv 0.01
+            done 
+        done
+    done
+done

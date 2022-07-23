@@ -36,6 +36,7 @@ for modifyPos in ${modifyPosSet[@]}; do
     done
 done
 
+echo "Process results:"
 for modifyPos in ${modifyPosSet[@]}; do
     for modifylength in ${modifylengthSet[@]}; do
         for modifyTimes in ${modifyTimesSet[@]}; do
@@ -52,3 +53,15 @@ for modifyPos in ${modifyPosSet[@]}; do
 done
 
 cp genDetectionRate ../SYNDetectionResults/
+cd ../SYNDetectionResults
+for modifyPos in ${modifyPosSet[@]}; do
+    for modifylength in ${modifylengthSet[@]}; do
+        for modifyTimes in ${modifyTimesSet[@]}; do
+            target="Snapshot size = ${snapSize} MiB, fake file number (n) = ${modifyTimes}, modify pos (x) = ${modifyPos}, modify length (y) = ${modifylength}"
+            echo $target
+            for windowSize in ${windowsSet[@]}; do
+                ./genDetectionRate Detection-x-${modifyPos}-y-${modifylength}-n-${modifyTimes}-Window-${windowSize}.csv 0.01
+            done 
+        done
+    done
+done
