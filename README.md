@@ -23,7 +23,7 @@ FeatureSpy simulator is developed under Ubuntu 20.04.3 LTS and depends on the fo
 sudo apt install -y build-essential openssl libssl-dev clang llvm python python3 curl git golang jq
 ```
 
-## Build
+### Build
 
 Compile and cleanup the FeatureSpy simulator as follows.
 
@@ -105,7 +105,7 @@ FeatureSpy prototype is tested on a machine that equips with a Gigabyte B460M-DS
 
 Before running the prototype, check if your machine supports SGX. If there is an option such as `SGX` or `Intel Software Guard Extensions` in BIOS, then enable the option; otherwise, your machine does not support SGX. We strongly recommend finding the SGX-supported device in the [SGX hardware list](https://github.com/ayeks/SGX-hardware).
 
-#### Dependencies
+### Dependencies
 
 We now provide a one-step script to automatically install and configure the dependencies. The script will ask for a password for `sudo` operations if necessary. We have tested the script on Ubuntu 20.04.3 LTS.
 
