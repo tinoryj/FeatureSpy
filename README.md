@@ -47,7 +47,7 @@ bash runSnapDetection.sh
 bash runSnapFalsePositive.sh
 ```
 
-For `runSnapDetection.sh`, the following messages will be output after the script is executed, including each condition and the detection ratio of the three schemes under that condition.
+For `runSnapDetection.sh`, the following messages will be output after the script is executed, including each condition's information and the detection ratio of the three schemes under that condition.
 
 ```txt
 Snapshot size = 1024 MiB, fake file number (n) = 1024, modify pos (x) = 2, modify length (y) = 2
@@ -57,7 +57,7 @@ Detection ratio with 3 feature = 0.0000000000
 ...
 ```
 
-For `runSnapFalsePositive.sh`, the following messages will be output after the script is executed, including each condition and the detection ratio of the three schemes under that condition.
+For `runSnapFalsePositive.sh`, the following messages will be output after the script is executed, including each condition's information and the false positive ratio of the three schemes under that condition.
 
 ```txt
 Snapshot size = 1024 MiB, swapped ratio (r) = 0.01, modify pos (x) = 2, modify length (y) = 2
