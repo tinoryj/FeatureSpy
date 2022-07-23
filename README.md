@@ -35,9 +35,9 @@ make
 make clean
 ```
 
-### Exp#1
+### Exp#1: Trade-off study
 
-Alternatively, we provide a quick way to analyze the detection effectiveness and false positive. You can use `runSnapDetection.sh` , `runSnapFalsePositive.sh` to test FeatureSpy's detection ratio and false positive under synthetic snapshots, respectively. Note that you can modify the parameters in the scripts to test different window sizes.
+We provide a quick way to analyze the trade-off of detection rate and false positive. You can use `runSnapDetection.sh` , `runSnapFalsePositive.sh` to test FeatureSpy's detection ratio and false positive under synthetic snapshots, respectively. Note that you can modify the parameters in the scripts to test different window sizes.
 
 ```txt
 # test with detection ratio or false positive
@@ -67,7 +67,7 @@ Detection ratio with 3 feature = 0.0000000000
 ...
 ```
 
-### Exp#2: CaseStudy
+### Exp#2: Case study of attack detection
 
 We provide a quick way to analyze the detection effectiveness. You can use `runCouch.sh` , `runLinux.sh` , `runGCC.sh`, `runGitlab.sh` to test FeatureSpy with CouchDB, Linux, GCC and Gitlab, respectively. Note that you can modify the parameters in the scripts to test different window sizes. Here, we use CouchDB as an example.
 
@@ -110,6 +110,7 @@ Before running the prototype, check if your machine supports SGX. If there is an
 We now provide a one-step script to automatically install and configure the dependencies. The script will ask for a password for `sudo` operations if necessary. We have tested the script on Ubuntu 20.04.3 LTS.
 
 ```shell
+cd Prototype/
 chmod +x scripts/environmentInstall.sh
 ./scripts/environmentInstall.sh
 ```
@@ -125,6 +126,7 @@ FeatureSpy prototype is configured based on JSON. You can change its configurati
 We provide a script for a quick build and clean-up, and you can use it.
 
 ```shell
+cd Prototype/
 chmod +x ./scripts/*.sh
 # Build FeatureSpy in release mode
 ./scripts/buildPrototype.sh
@@ -139,6 +141,7 @@ The generated executable file and its required enclave dynamic library, keys are
 You can test the prototype in a single machine, and connect the key server, cloud, and client instances via the local loopback interface in `bin` directory. Since the key enclave needs to be attested by the cloud before usage, you need to start the cloud (`server-sgx`) first, then start the key server (`keymanager-sgx`), and wait for the message `KeyServerMain : key server remote attestation done, start to provide service` that indicates a successful attestation. **Currently, we have provided a set of Intel EPID-based remote attestation subscription keys for testing in `./Prototype/config.json`**
 
 ```shell
+cd Prototype/
 # start cloud
 cd bin
 ./server-sgx
@@ -151,6 +154,7 @@ cd bin
 FeatureSpy prototype provides store and restores interfaces to clients.
 
 ```shell
+cd Prototype/
 # store file
 cd bin
 ./client-sgx -s file
