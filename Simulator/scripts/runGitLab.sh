@@ -47,7 +47,8 @@ done
 
 cp -r ../../fakeOfferGen ./
 cd fakeOfferGen
-./generateFileList.sh 
+./generateFakeOffers.sh
+./generateFileList.sh ./result fakeFile.fileList
 cp ./fakeFile.fileList ../
 cd ..
 ./chunking fakeFile.fileList
@@ -70,3 +71,8 @@ for target in ${dataSet[@]}; do
 done
 
 cp genDetectionRate ../gitlabCaseStudyResult/
+cd ../gitlabCaseStudyResult/
+echo "Detection ratio with Gitlab dataset:"
+./genDetectionRate mixedFakeOffersPrefixFreq-Gitlab-WindowSize-16000.csv 0.01
+echo "False positive with Gitlab dataset:"
+./genDetectionRate orignalPrefixFreq-Gitlab-WindowSize-16000.csv 0.01

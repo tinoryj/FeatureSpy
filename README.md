@@ -22,71 +22,20 @@ FeatureSpy simulator is developed under Ubuntu 20.04.3 LTS and depends on the fo
 sudo apt install -y build-essential openssl libssl-dev clang llvm python python3 curl git golang jq
 ```
 
-### Exp#1: SyntheticSnapshots
+## Build
 
-### Exp#2: CaseStudy
-
-#### Build
-
-Compile and cleanup the simulator as follows.
+Compile and cleanup the FeatureSpy simulator as follows.
 
 ```shell
-cd ./Simulator/CaseStudy
+cd Simulator/simCode
 # compile
 make
 # cleanup
 make clean
 ```
 
-#### Usage
-
-We provide a quick way to analyze the detection effectiveness. You can use `runCouch.sh` and `runLinux.sh` to test FeatureSpy with CouchDB and Linux, respectively, and use `processResult.sh` to output the summary of results. Note that you can modify the parameters in `runCouch.sh` and `runLinux.sh` to test different window sizes and similarity indicator lengths. Alternatively, you can follow [FeatureSpy/README.pdf](FeatureSpy/README.pdf) to manually run the simulator.
-
-```shell
-# download trace
-cd FeatureSpy/traceDownload
-chmod +x *.sh
-bash downloadTraceCouch.sh
-bash downloadTraceLinux.sh
-# generate fake offers
-cd FeatureSpy/SimulateOfferGenerator
-chmod +x generateFakeOffers.sh
-bash generateFakeOffers.sh
-# test with CouchDB and Linux trace
-cd FeatureSpy/
-chmod +x *.sh
-bash runCouch.sh
-bash runLinux.sh
-bash processResult.sh
-```
-
-In the running of `runLinux.sh`/`runCouch.sh`, the program processes each snapshot and outputs the detection results in the command line (via `stderr`).
-
-
-```shell
-firstFeature: not detected
-minFeature: detected
-allFeature: not detected
-```
-
-Also, it saves the feature distribution information of each window of the processing snapshot in `FeatureSpy/linuxResult/` and  `FeatureSpy/couchResult/` for Linux and CouchDB datasets, respectively. The file name of each raw snapshot is `${snpashotID}-origin-${windowSize}-${indicatorLength}.csv`, while that of each attack snapshot (i.e., adversarially injected with fake offers) is `${snpashotID}-mixed-${windowSize}-${indicatorLength}.csv`. An example file is shown as follows, where each row represents the fraction of the most number of chunks that have the same similarity indicator in a window.
-
-| firstFeature | minFeature | allFeature |
-| ------------ | ---------- | ---------- |
-| 0.08         | 0.08       | 0.08       |
-| 0.001        | 0.002      | 0.001      |
-| 0.003        | 0.003      | 0.003      |
-
-
-Furthermore, the script `processResult.sh` generates the file `mergedLinuxResult-${windowSize}-${indicatorLength}.csv`/`mergedCouchResult-${windowSize}-${indicatorLength}.csv` to summarize the final results of attack detection for all snapshots (see below). Each row represents the maximum fraction of the most number of chunks that have the same similarity indicator among all windows in each snapshot. Note that the raw (mixed) here means the snapshot without (with) injected faked offers.
-
-| firstFeature max freq (raw) | minFeature max freq (raw) | allFeature max freq (raw) | firstFeature max freq (mixed) | minFeature max freq (mixed) | allFeature max freq (mixed) |
-| :-------------------------- | ------------------------- | ------------------------- | ----------------------------- | --------------------------- | --------------------------- |
-| 0.0032                      | 0.0028                    | 0.0028                    | 0.1106                        | 0.1106                      | 0.1106                      |
-| 0.003                       | 0.003                     | 0.003                     | 0.1022                        | 0.1022                      | 0.1022                      |
-| 0.0026                      | 0.0024                    | 0.0024                    | 0.1026                        | 0.1026                      | 0.1026                      |
-| 0.0026                      | 0.0022                    | 0.0022                    | 0.0972                        | 0.0972                      | 0.0972                      |
-
+### Exp#1: SyntheticSnapshots
+### Exp#2: CaseStudy
 
 ## Prototype
 

@@ -45,7 +45,8 @@ done
 
 cp -r ../../fakeOfferGen ./
 cd fakeOfferGen
-./generateFileList.sh 
+./generateFakeOffers.sh
+./generateFileList.sh ./result fakeFile.fileList
 cp ./fakeFile.fileList ../
 cd ..
 ./chunking fakeFile.fileList
@@ -68,3 +69,8 @@ for target in ${dataSet[@]}; do
 done
 
 cp genDetectionRate ../gccCaseStudyResult/
+cd ../gccCaseStudyResult/
+echo "Detection ratio with GCC dataset:"
+./genDetectionRate mixedFakeOffersPrefixFreq-GCC-WindowSize-16000.csv 0.01
+echo "False positive with GCC dataset:"
+./genDetectionRate orignalPrefixFreq-GCC-WindowSize-16000.csv 0.01

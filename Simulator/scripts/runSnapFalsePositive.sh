@@ -43,7 +43,7 @@ for modifyPos in ${modifyPosSet[@]}; do
             for randomSeed in $(seq 1 $targetRunningTimes); do
                 target="syn_zipf_${zipfA}-Seed-${randomSeed}-Ratio-${swapRatio}-Pos-${modifyPos}-Len-${modifylength}"
                 for windowSize in ${windowsSet[@]}; do
-                    ./processWindowCheckResult "./${windowSize}-${target}-swaped-logical.csv" ${targetPrefixID} >> ../SYNFalseResults/FalsePositive-x-${modifyPos}-y-${modifylength}-r-${swapRatio}-Window-${windowSize}.csv
+                    ./processWindowCheckResult "./${windowSize}-${target}-swaped-logical.csv">> ../SYNFalseResults/FalsePositive-x-${modifyPos}-y-${modifylength}-r-${swapRatio}-Window-${windowSize}.csv
                 done 
             done
         done
