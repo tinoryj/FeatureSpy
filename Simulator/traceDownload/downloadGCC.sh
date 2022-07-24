@@ -1,7 +1,7 @@
 #!/bin/bash
 git clone git://gcc.gnu.org/git/gcc.git
 targetGit="./gcc"
-mkdir gcc-packed/releases
+mkdir packed-gcc/releases
 cd $targetGit
 git tag > ../tags-gcc.log
 tagListSize=`sed -n '$=' ../tags-gcc.log`
@@ -15,10 +15,10 @@ for index in `seq 1 $tagListSize`; do
         if [[ $tag = *releases/gcc* ]]
         then
             echo $tag
-            git archive --format=zip --output=../gcc-packed/$tag.zip $tag
+            git archive --format=zip --output=../packed-gcc/$tag.zip $tag
         fi
     fi
 done
 cd ..
-mv gcc-packed/releases/* gcc-packed/
-rm -rf gcc-packed/releases
+mv packed-gcc/releases/* packed-gcc/
+rm -rf packed-gcc/releases

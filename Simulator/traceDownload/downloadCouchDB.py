@@ -6,7 +6,7 @@ version_set = ["2.5.2", "3.0.2", "3.0.3", "3.1.0", "3.1.3", "3.1.5", "3.1.6", "4
 
 package_flag = "-cvf"
 download_output_folder = "./download_container_couch/" # for output folder
-repack_output_folder = "./packed_couch/" # for output folder
+repack_output_folder = "./packed-couch/" # for output folder
 
 def Download(input_version):
     cmd = "bash download-frozen-image-v2.sh " + download_output_folder + " " + "couchbase:" + input_version 

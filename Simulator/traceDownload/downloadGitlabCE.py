@@ -6,7 +6,7 @@ version_set = ["14.0.0-ce.0","14.0.1-ce.0","14.0.10-ce.0","14.0.11-ce.0","14.0.1
 
 package_flag = "-cvf"
 download_output_folder = "./download_container_gitlab/" # for output folder
-repack_output_folder = "./packed_gitlab/" # for output folder
+repack_output_folder = "./packed-gitlab/" # for output folder
 
 def Download(input_version):
     cmd = "bash download-frozen-image-v2.sh " + download_output_folder + " " + "gitlab/gitlab-ce:" + input_version 
