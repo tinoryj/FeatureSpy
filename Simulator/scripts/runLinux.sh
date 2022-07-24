@@ -71,6 +71,8 @@ done
 
 cp genDetectionRate ../linuxCaseStudyResult/
 cd ../linuxCaseStudyResult/
+echo "---------- Results ----------"
+echo "Output results:"
 echo "Detection ratio with Linux dataset:"
 ./genDetectionRate mixedFakeOffersPrefixFreq-Linux-WindowSize-16000.csv 0.01
 echo "False positive with Linux dataset:"

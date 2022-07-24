@@ -35,9 +35,31 @@ make
 make clean
 ```
 
+### Trace download
+
+Download Linux, GCC, CouchDB, and Gitlab datasets respectively as follows. Note that the snapshots will be downloaded to the `packed-linux`, `packed-gcc`, `packed-couch`, and `packed-gitlab` directories under the `Simulator/traceDownload` directory respectively.
+
+```shell
+# download trace
+cd Simulator/traceDownload
+chmod +x *.sh
+
+# download Linux dataset
+bash downloadLinux.sh
+
+# download GCC dataset
+bash downloadGCC.sh
+
+# download CouchDB dataset
+python downloadCouchDB.py
+
+# download Gitlab dataset
+python downloadGitlabCE.py
+```
+
 ### Exp#1: Trade-off study
 
-We provide a quick way to analyze the trade-off of detection rate and false positive. You can use `runSnapDetection.sh` , `runSnapFalsePositive.sh` to test FeatureSpy's detection ratio and false positive under synthetic snapshots, respectively. Note that you can modify the parameters in the scripts to test different window sizes.
+We provide a quick way to analyze the trade-off between detection accuracy and false positive. You can use `runSnapDetection.sh` , `runSnapFalsePositive.sh` to test FeatureSpy's detection ratio and false positive under synthetic snapshots, respectively. Note that you can modify the parameters in the scripts to test different window sizes.
 
 ```txt
 # test with detection ratio or false positive
@@ -69,14 +91,11 @@ Detection ratio with 3 feature = 0.0000000000
 
 ### Exp#2: Case study of attack detection
 
-We provide a quick way to analyze the detection effectiveness. You can use `runCouch.sh` , `runLinux.sh` , `runGCC.sh`, `runGitlab.sh` to test FeatureSpy with CouchDB, Linux, GCC and Gitlab, respectively. Note that you can modify the parameters in the scripts to test different window sizes. Here, we use CouchDB as an example.
+We provide a quick way to analyze the detection accuracy and false positive. You can use `runCouch.sh` , `runLinux.sh` , `runGCC.sh`, `runGitlab.sh` to test FeatureSpy with CouchDB, Linux, GCC and Gitlab, respectively. In addition, you can modify the parameters in the scripts to test different window sizes. Here, we use CouchDB as an example.
+
+**Note that the following script should only be executed when the dataset download has been completed.**
 
 ```txt
-# download trace
-cd Simulator/traceDownload
-chmod +x *.sh
-python downloadCouchDB.py
-# test with different trace
 cd Simulator/scripts
 chmod +x *.sh
 bash runCouch.sh
@@ -85,6 +104,8 @@ bash runCouch.sh
 In the running of the scripts, the program processes each snapshot and finally outputs the detection ratio and false positive results in the command line (via `stdout`).
 
 ```txt
+---------- Results ----------
+Output results:
 Detection ratio with CouchDB dataset:
 Detection ratio with 1 feature = 1.0000000000
 Detection ratio with 2 feature = 1.0000000000

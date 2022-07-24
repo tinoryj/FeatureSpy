@@ -40,6 +40,7 @@ echo "Process results:"
 for modifyPos in ${modifyPosSet[@]}; do
     for modifylength in ${modifylengthSet[@]}; do
         for swapRatio in ${swapRatioSet[@]}; do
+            echo "Process result for x=${modifyPos},y=${modifylength},r=${swapRatio}"
             for randomSeed in $(seq 1 $targetRunningTimes); do
                 target="syn_zipf_${zipfA}-Seed-${randomSeed}-Ratio-${swapRatio}-Pos-${modifyPos}-Len-${modifylength}"
                 for windowSize in ${windowsSet[@]}; do
@@ -52,6 +53,8 @@ done
 
 cp genDetectionRate ../SYNFalseResults/
 cd ../SYNFalseResults
+echo "---------- Results ----------"
+echo "Output results:"
 for modifyPos in ${modifyPosSet[@]}; do
     for modifylength in ${modifylengthSet[@]}; do
         for swapRatio in ${swapRatioSet[@]}; do

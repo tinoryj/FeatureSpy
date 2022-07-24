@@ -40,7 +40,7 @@ echo "Process results:"
 for modifyPos in ${modifyPosSet[@]}; do
     for modifylength in ${modifylengthSet[@]}; do
         for modifyTimes in ${modifyTimesSet[@]}; do
-            echo "${modifyPos}-${modifylength}-${modifyTimes}"
+            echo "Process result for x=${modifyPos},y=${modifylength},n=${modifyTimes}"
             for randomSeed in $(seq 1 $targetRunningTimes); do
                 for windowSize in ${windowsSet[@]}; do
                     if [ -f "./syn_zipf_${zipfA}-Chunk-${chunkSize}-Pos-${modifyPos}-Len-${modifylength}-Number-${modifyTimes}-Seed-${randomSeed}-mixed-Window-${windowSize}.csv" ]; then
@@ -54,6 +54,8 @@ done
 
 cp genDetectionRate ../SYNDetectionResults/
 cd ../SYNDetectionResults
+echo "---------- Results ----------"
+echo "Output results:"
 for modifyPos in ${modifyPosSet[@]}; do
     for modifylength in ${modifylengthSet[@]}; do
         for modifyTimes in ${modifyTimesSet[@]}; do

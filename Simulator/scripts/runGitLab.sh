@@ -72,6 +72,8 @@ done
 
 cp genDetectionRate ../gitlabCaseStudyResult/
 cd ../gitlabCaseStudyResult/
+echo "---------- Results ----------"
+echo "Output results:"
 echo "Detection ratio with Gitlab dataset:"
 ./genDetectionRate mixedFakeOffersPrefixFreq-Gitlab-WindowSize-16000.csv 0.01
 echo "False positive with Gitlab dataset:"
