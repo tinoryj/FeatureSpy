@@ -11,7 +11,7 @@ FeatureSpy simulator is developed under Ubuntu 20.04.3 LTS and depends on the fo
 3. clang/llvm (For compiling source code)
 4. python (For faking offer file generator)
 5. git (System components used for downloading Linux datasets)
-6. curl/golang/jq (System components used for downloading CouchDB datasets)
+6. curl/golang/jq (System components used for downloading docker-based datasets)
 
 The above packages can be installed via the `apt` package management tool with the following commands on Ubuntu.
 
@@ -31,11 +31,33 @@ make
 make clean
 ```
 
-## Usage for Exp#1
+## Trace download
 
-## Automatic scripts
+Download Linux, GCC, CouchDB, and Gitlab datasets respectively as follows. Note that the snapshots will be downloaded to the `packed-linux`, `packed-gcc`, `packed-couch`, and `packed-gitlab` directories under the `Simulator/traceDownload` directory respectively.
 
-We provide a quick way to analyze the detection effectiveness. You can use `runSnapDetection.sh` , `runSnapFalsePositive.sh` to test FeatureSpy's detection ratio and false positive under synthetic snapshots, respectively. Note that you can modify the parameters in the scripts to test different window sizes.
+```shell
+# download trace
+cd Simulator/traceDownload
+chmod +x *.sh
+
+# download Linux dataset
+bash downloadLinux.sh
+
+# download GCC dataset
+bash downloadGCC.sh
+
+# download CouchDB dataset
+python downloadCouchDB.py
+
+# download Gitlab dataset
+python downloadGitlabCE.py
+```
+
+## Exp#1: Trade-off study
+
+### Automatic scripts
+
+We provide a quick way to analyze the trade-off between detection accuracy and false positive. You can use `runSnapDetection.sh` , `runSnapFalsePositive.sh` to test FeatureSpy's detection ratio and false positive under synthetic snapshots, respectively. Note that you can modify the parameters in the scripts to test different window sizes.
 
 ```txt
 # test with detection ratio or false positive
@@ -45,9 +67,7 @@ bash runSnapDetection.sh
 bash runSnapFalsePositive.sh
 ```
 
-In the running of the scripts, the program processes each snapshot and finally saves the indicator distribution information of each snapshot of the processing snapshot in `Simulator/scripts/SYNDetectionResults/` and `Simulator/scripts/SYNFalseResults/` for the synthetic dataset.  For detection ratio and false positive, the results in each case are saved in `Detection-x-${x}-y-${y}-n-${n}-Window-${w}.csv` and `FalsePositive-x-${x}-y-${y}-r-${r}-Window-${w}.csv`.
-
-For `runSnapDetection.sh`, the following messages will be output after the script is executed, including each condition and the detection ratio of the three schemes under that condition.
+For `runSnapDetection.sh`, the following messages will be output after the script is executed, including each condition's information and the detection ratio of the three schemes under that condition.
 
 ```txt
 Snapshot size = 1024 MiB, fake file number (n) = 1024, modify pos (x) = 2, modify length (y) = 2
@@ -57,8 +77,7 @@ Detection ratio with 3 feature = 0.0000000000
 ...
 ```
 
-For `runSnapFalsePositive.sh`, the following messages will be output after the script is executed, including each condition and the detection ratio of the three schemes under that condition.
-
+For `runSnapFalsePositive.sh`, the following messages will be output after the script is executed, including each condition's information and the false positive ratio of the three schemes under that condition.
 
 ```txt
 Snapshot size = 1024 MiB, swapped ratio (r) = 0.01, modify pos (x) = 2, modify length (y) = 2
@@ -68,45 +87,57 @@ Detection ratio with 3 feature = 0.0000000000
 ...
 ```
 
-An example file is shown as follows, where each row represents the fraction of the most number of chunks that have the same similarity indicator across all windows in the snapshot, and each row represents a different snapshot generated with a different random seed in the synthetic dataset.
+In addition to the direct output results, you can further calculate detection accuracy and false positive of FeatureSpy under different thresholds according to the intermediate result files in the `Simulator/scripts/SYNDetectionResults` and `Simulator/scripts/SYNFalseResults` directory for detection ratio and false positive, respectively. An example file is shown as follows, where each row represents the fraction of the highest frequency similar chunk in the snapshots detected by FeatureSpy based on the window under three schemes.
 
-| Indicator of s=1 | Indicator of s=2 | Indicator of s=3  |
+| Fraction of s=1 | Fraction of s=2 | Fraction of s=3  |
 | ------------ | ---------- | ---------- |
 | 0.008         | 0.008       | 0.008       |
 | 0.001        | 0.002      | 0.001      |
 | 0.003        | 0.003      | 0.003      |
 
+
 You can refer to the following instructions to obtain the detection ratio or false positive of the three schemes under different thresholds T.
 
 ```txt 
-# param 1: Processed raw dataset result or mixed fake files result.
-# param 2: Threshold T
+# param 1: Processed raw dataset result or mixed fake files result (${x} indicate the parameter in the paper).
+# param 2: Threshold T 
+
+# For detection ratio:
+cd Simulator/scripts/SYNDetectionResults
+./genDetectionRate Detection-x-${x}-y-${y}-n-${n}-Window-${w}.csv 0.01
+
+# For false positive:
+cd Simulator/scripts/SYNFalseResults
 ./genDetectionRate FalsePositive-x-${x}-y-${y}-r-${r}-Window-${w}.csv 0.01
-# Output:
+
+# The output:
 Detection ratio with 1 feature = 1.0000000000
 Detection ratio with 2 feature = 1.0000000000
 Detection ratio with 3 feature = 1.0000000000
 ```
 
-## Manual
+### Manual
 
 **Step 1:** Generate the baseline synthetic snapshots.
 
 ```txt
 cd Simulator/simCode
 chmod +x *.sh
+
+# Generate the size information for each file in the target snapshot.
 # param 1: -c 1.0 indicates the parameter for Zipf distribution is 1.0
 # param 2: -s 1024 indicates the target snapshot size is 1024 MiB 
 python3 GenZipf.py -o syn_zipf_1.0 -c 1.0 -s 1024
+
+# Generate the chunks' information (ID, size, hash, feature, and indicator) for each file in the target snapshot.
 # param 1: the file size information list generated by the GenZipf.py script
 # param 2: 8192 indicates the chunk size of the generated snapshot will be 8 KiB
-# Output: it will generate the file and chunk information list of the snapshot (the content of the snapshot is randomly filled)
 ./baselineSnapGen syn_zipf_1.0 8192
 ```
 
 **Step 2:** Generate synthetic snapshots based on the baseline snapshot.
 
-For detection ratio, refer to the following script to generate the synthetic snapshot's chunk information which is mixed with fake files.
+For detection ratio, refer to the following script to generate the synthetic snapshot which is mixed with fake files.
 
 ```txt
 cd Simulator/simCode
@@ -118,9 +149,7 @@ cd Simulator/simCode
 ./mixedFilesGenSYN syn_zipf_1.0.fileInfo syn_zipf_1.0.chunkInfo 8192 ${x} ${y} ${n} ${randomSeed}
 ```
 
-**Step 2:** 
-
-For false positives, refer to the following script to generate synthetic snapshot chunk information with different similarities.
+For false positives, refer to the following script to generate a synthetic snapshot with different similarities.
 
 ```txt
 cd Simulator/simCode
@@ -135,14 +164,15 @@ cd Simulator/simCode
 **Step 3:** Detect the learning-content attack based on generated chunks' information.
 
 ```txt
-# param 1: Chunk info list `*.chunkInfo` generated by chunking or mixedFilesGen; use 2.5.2.fileList.mixed.chunkInfo as an example
+# Process each window to count the max frequency of each window.
+# param 1: Chunk info list `${chunkSize}-${x}-${y}-${n}-${randomSeed}.chunkInfo` generated by `mixedFilesGenSYN` or `syn_zipf_1.0.swap.chunkInfo` generated by `swappedSnapGen`
 # param 2: Window size (W); use the default  window size W=16000 as an example
-# param 3: Redirect `windowCheck`'s stdout to the specified file for recording the maximum frequency of each window under the different schemes; use result-mixed.csv as an example
-# Function: process each window to count the max frequency of each window.
+# Output: Redirect `windowCheck`'s stdout to the specified file for recording the maximum frequency of each window under the different schemes; use result-mixed.csv as an example
 ./windowCheck syn_zipf_1.0.swap.chunkInfo 16000 > result-mixed.csv
+
+# Process each window to count the max frequency of the snapshot.
 # param 1: window check result generated by `windowCheck`; use result-mixed.csv as an example
-# param 2: Redirect processWindowCheckResult's stdout to the specified file for recording the maximum frequency in the target snapshot under the different schemes (use the Indicator); use window-mixed.csv as an example
-# Function: process each window to count the max frequency of the snapshot.
+# Output: Redirect processWindowCheckResult's stdout to the specified file for recording the maximum frequency in the target snapshot under the different schemes (use the Indicator); use window-mixed.csv as an example
 ./processWindowCheckResult result-mixed.csv >> window-mixed.csv
 ```
 
@@ -152,7 +182,7 @@ The `window-mixed.csv` file records a similar frequency in the window with the h
 0.1860000000 , 0.1860000000 , 0.1860000000
 ```
 
-You can directly compare the value with your preset threshold, and when the value is greater than the threshold, determine that `FeatureSpy` detects an attack in the snapshot. In addition, you can use `genDetectionRate` as follows, and the output will give the detection rate of different schemes.
+You can directly compare the value with your preset threshold, and when the value is greater than the threshold, determine that `FeatureSpy` detects an attack in the snapshot. In addition, you can use `genDetectionRate` as follows to output the detection rate of different schemes.
 
 ```txt
 # param 1: Processed window check result generated by processWindowCheckResult; use window-mixed.csv as an example
@@ -164,22 +194,9 @@ Detection ratio with 2 feature = 1.0000000000
 Detection ratio with 3 feature = 1.0000000000
 ```
 
+## Exp#2: Case study of attack detection
 
-**Step 4:** If you want to test whether `FeatureSpy`  produces false positives on raw synthetic snapshots with different similarity ratios, you need to run `windowCheck`, `processWindowCheckResult`, and `genDetectionRate` directly on the chunking result of "${chunkSize}-${x}-${y}-${n}-${randomSeed}.chunkInfo" to get the result as in Step 3. Note that the detection ratio here corresponds to the false positive of `FeatureSpy`.
-
-```txt
-./windowCheck ${chunkSize}-${x}-${y}-${n}-${randomSeed}.chunkInfo 16000 > result-raw.csv
-./processWindowCheckResult result-raw.csv > window-raw.csv
-./genDetectionRate window-raw.csv 0.01
-# Output:
-Detection ratio with 1 feature = 0.0000000000
-Detection ratio with 2 feature = 0.0000000000
-Detection ratio with 3 feature = 0.0000000000
-```
-
-## Usage for Exp#2
-
-## Automatic scripts
+### Automatic scripts
 
 We provide a quick way to analyze the detection effectiveness. You can use `runCouch.sh` , `runLinux.sh` , `runGCC.sh`, `runGitlab.sh` to test FeatureSpy with CouchDB, Linux, GCC and Gitlab, respectively. Note that you can modify the parameters in the scripts to test different window sizes.
 
@@ -191,6 +208,7 @@ python downloadCouchDB.py
 python downloadGitlabCE.py
 bash downloadLinux.sh
 bash downloadGCC.sh
+
 # test with different trace
 cd Simulator/scripts
 chmod +x *.sh
@@ -213,15 +231,9 @@ Detection ratio with 2 feature = 0.0000000000
 Detection ratio with 3 feature = 0.0000000000
 ```
 
-Also, it saves the indicator distribution information of each snapshot of the processing snapshot in `Simulator/scripts/couchCaseStudyResult/` for the CouchDB dataset which is similar to other datasets. Use CouchDB as an example, the `orignalPrefixFreq-Couch-WindowSize-16000.csv` stores the result for false positive calculation, and `mixedFakeOffersPrefixFreq-Couch-WindowSize-16000.csv` stores the result for detection ratio calculation. An example file is shown as follows, where each row represents the fraction of the most number of chunks that have the same similarity indicator across all windows in the snapshot, and each row represents a snapshot in the dataset.
+As in Exp#1, the simulator also saves the intermediate results in  `Simulator/scripts/${dataset}StudyResult/` for manual analysis of the effects under different thresholds. Use CouchDB as an example, the `orignalPrefixFreq-Couch-WindowSize-16000.csv` stores the result for false positive calculation, and `mixedFakeOffersPrefixFreq-Couch-WindowSize-16000.csv` stores the result for detection ratio calculation. 
 
-| Indicator of s=1 | Indicator of s=2 | Indicator of s=3  |
-| ------------ | ---------- | ---------- |
-| 0.008         | 0.008       | 0.008       |
-| 0.001        | 0.002      | 0.001      |
-| 0.003        | 0.003      | 0.003      |
-
-Here, you can use `genDetectionRate` in the `Simulator/scripts/couchCaseStudyResult/` directory to manually test the detection ratio and false positive of the dataset under different thresholds according to `mixedFakeOffersPrefixFreq-Couch-WindowSize-16000.csv` and `orignalPrefixFreq-Couch-WindowSize-16000.csv`
+Here, you can use `genDetectionRate` in the `Simulator/scripts/couchCaseStudyResult/` directory to manually test the detection ratio and false positive of the dataset under different thresholds as follow (use the analysis of false positive as an example).
 
 ```txt 
 # param 1: Processed raw dataset result or mixed fake offers result.
@@ -233,20 +245,9 @@ Detection ratio with 2 feature = 1.0000000000
 Detection ratio with 3 feature = 1.0000000000
 ```
 
-## Manual
+### Manual
 
-**Step 1:** Download the Linux/CouchDB/GCC/Gitlab datasets. The downloaded Linux/CouchDB/GCC/Gitlab snapshots will be saved in `Simulator/traceDownload/packed-linux`/`Simulator/traceDownload/packed-couch`/`Simulator/traceDownload/packed-gcc`/`Simulator/traceDownload/packed-gitlab`, respectively.
-
-```txt
-cd Simulator/traceDownload
-chmod +x *.sh
-python downloadCouchDB.py
-python downloadGitlabCE.py
-bash downloadLinux.sh
-bash downloadGCC.sh
-```
-
-**Step 2:** Generate faked offers that enumerate salary and sign-on bonus.  We have packaged the original Google's offer letter in `Simulator/fakeOfferGen`. Alternatively, it is feasible to download the original offer from [here](https://www.sec.gov/Archives/edgar/data/1288776/000119312508140342/dex101.htm). In addition to the default range in our paper, you can modify the parameters in `generateFakeOffers.sh` to change the ranges and cardinalities of the salary and sign-on bonus, respectively. The generated offers are stored in the `Simulator/fakeOfferGen/result` directory.
+**Step 1:** Generate faked offers that enumerate salary and sign-on bonus.  We have packaged the original Google's offer letter in `Simulator/fakeOfferGen`. Alternatively, it is feasible to download the original offer from [here](https://www.sec.gov/Archives/edgar/data/1288776/000119312508140342/dex101.htm). In addition to the default range in our paper, you can modify the parameters in `generateFakeOffers.sh` to change the ranges and cardinalities of the salary and sign-on bonus, respectively. The generated offers are stored in the `Simulator/fakeOfferGen/result` directory.
 
 ```txt
 cd Simulator/fakeOfferGen
@@ -254,7 +255,7 @@ chmod +x generateFakeOffers.sh
 bash generateFakeOffers.sh
 ```
 
-**Step 3:** Generate the list of the faked offer files.
+**Step 2:** Generate the list of the faked offer files.
 
 ```txt
 cd Simulator
@@ -275,34 +276,31 @@ An example of the file list is shown below. Each line corresponds to an adversar
 ...
 ```
 
-**Step 4:** Generate the list of files in each Linux/CouchDB/GCC/Gitlab snapshot. Here we use CouchDB 2.5.2 as an example and store the untared contents in `Simulator/simCode/2.5.2`.
+**Step 3:** Generate the list of files in each Linux/CouchDB/GCC/Gitlab snapshot. Here we use CouchDB 2.5.2 as an example and store the untared contents in `Simulator/simCode/2.5.2`.
 
 ```txt
 cd Simulator/simCode
 chmod +x *.sh
 tar -xvf ../traceDownload/packed-couch/2.5.2.tar -C 2.5.2
+
 # param 1: path to the folder where the target files are stored
 # param 2: path to store the generated file list
 bash generateFileList.sh 2.5.2 2.5.2.fileList
 ```
 
-**Step 5:** Randomly insert the faked offers into the target snapshot to form an attack snapshot, perform chunking on each file of the attack snapshot and output the sequential list of chunk metadata of the target snapshot.
+**Step 4:** Perform chunking on each file of the plain snapshot and fake offers, which will output the chunk metadata list.
 
 ```txt
 cd Simulator/simCode
 make clean
 make
-# param 1: file list of target snapshots/fakeOffers (generated by steps 3 and 4); use 2.5.2.fileList and fakeFile.fileList as an example
+# param 1: file list of target snapshots/fakeOffers (generated by steps 2 and 3); use 2.5.2.fileList and fakeFile.fileList as an example
 # Function: chunking will perform file-by-file chunking according to the file list, and generate relevant information about all chunks contained in the corresponding file list.
 ./chunking 2.5.2.fileList
 ./chunking fakeFile.fileList
-# param 1: file list of inserted snapshots (generated by step 4); use 2.5.2.fileList as an example
-# param 2: file list of fake offers (generated by step 3); use fakeFile.fileList as an example
-# Function: Mix files from the original snapshot and fake offers, yield 2.5.2.fileList.mixed.chunkInfo
-./mixedFilesGen 2.5.2.fileList fakeFile.fileList
 ```
 
-An example of the list of chunk metadata (`2.5.2.fileList.mixed.chunkInfo`) is shown below. The metadata contains the "Chunk ID, Chunk Hash, Chunk Size, Feature s=1, Feature s=2, Feature s=3, Indicator s=1, Indicator s=2, Indicator s=3" of each chunk.
+An example of the list of chunk metadata (`2.5.2.fileList.chunkInfo`) is shown below. The metadata contains the "Chunk ID, Chunk Hash, Chunk Size, Feature s=1, Feature s=2, Feature s=3, Indicator s=1, Indicator s=2, Indicator s=3" of each chunk.
 
 ```txt
 0
@@ -317,7 +315,16 @@ CF05C45E104F5C1CA51C3C175614465D5348735D19D0713665E97BBF0CB756BA
 ...
 ```
 
-**Step 6:** Detect the learning-content attack based on generated chunks' information.
+**Step 5:** Randomly insert the faked offers into the target snapshot to form an attack snapshot. Generate the chunk metadata list corresponding to the mixed snapshot based on `*.fileList` and `*.chunkInfo`.
+
+```txt
+# param 1: file list of inserted snapshots (generated by step 2); use `2.5.2.fileList` as an example
+# param 2: file list of fake offers (generated by step 3); use `fakeFile.fileList` as an example
+# Function: Mix files from the original snapshot and fake offers, yield `2.5.2.fileList.mixed.chunkInfo`
+./mixedFilesGen 2.5.2.fileList fakeFile.fileList
+```
+
+**Step 6:** Detect the learning-content attack based on generated chunks' metadata list.
 
 ```txt
 # param 1: Chunk info list `*.chunkInfo` generated by chunking or mixedFilesGen; use 2.5.2.fileList.mixed.chunkInfo as an example
@@ -325,6 +332,7 @@ CF05C45E104F5C1CA51C3C175614465D5348735D19D0713665E97BBF0CB756BA
 # param 3: Redirect `windowCheck`'s stdout to the specified file for recording the maximum frequency of each window under the different schemes; use result-mixed.csv as an example
 # Function: process each window to count the max frequency of each window.
 ./windowCheck 2.5.2.fileList.mixed.chunkInfo 16000 > result-mixed.csv
+
 # param 1: window check result generated by `windowCheck`; use result-mixed.csv as an example
 # param 2: Redirect processWindowCheckResult's stdout to the specified file for recording the maximum frequency in the target snapshot under the different schemes (use the Indicator); use window-mixed.csv as an example
 # Function: process each window to count the max frequency of the snapshot.
