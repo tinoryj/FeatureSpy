@@ -4,9 +4,9 @@
 
 FeatureSpy is a secure deduplicated storage system that effectively detects learning-content attacks based on the observation that such attacks often generate a large volume of similar data.
 
-This repo contains the implementation of the FeatureSpy prototype and a trace analysis tool used in our paper.
+This repo contains the implementation of the FeatureSpy prototype and a trace analysis tool used in our IEEE INFOCOM 2023 paper.
 
-* **./Prototype**: includes the implementation of prototype.
+* **./Prototype**: includes the implementation of the prototype.
 * **./Simulator**: includes a trace analysis tool to measure the detection and false-positive rate of FeatureSpy.
 
 Note that each folder has a separate README file to introduce the detailed build and usage instructions.
@@ -17,27 +17,28 @@ The simulator is used to run the experiments in §VI.B in our paper. It includes
 
 ### Dependencies
 
-FeatureSpy simulator is developed under Ubuntu 20.04.3 LTS and depends on the following packages that need to be installed by the default `apt` package management tool.
+FeatureSpy simulator is developed under Ubuntu 20.04.3 LTS and depends on the following packages that need to be installed by the default `apt` and `pip` package management tools.
 
 ```shell
-sudo apt install -y build-essential openssl libssl-dev clang llvm python python3 curl git golang jq
+sudo apt install -y build-essential openssl libssl-dev clang llvm python3 curl git golang jq python3-pip
+pip3 install tqdm
 ```
 
 ### Build
 
-Compile and cleanup the FeatureSpy simulator as follows.
+Compile and clean up the FeatureSpy simulator as follows.
 
 ```shell
 cd Simulator/simCode
 # compile
 make
-# cleanup
+# clean up
 make clean
 ```
 
 ### Trace download
 
-Download Linux, GCC, CouchDB, and Gitlab datasets respectively as follows. Note that the snapshots will be downloaded to the `packed-linux`, `packed-gcc`, `packed-couch`, and `packed-gitlab` directories under the `Simulator/traceDownload` directory respectively.
+Download Linux, GCC, CouchDB, and Gitlab datasets, respectively, as follows. Note that the snapshots will be downloaded to the `packed-linux`, `packed-gcc`, `packed-couch`, and `packed-gitlab` directories under the `Simulator/traceDownload` directory, respectively.
 
 ```shell
 # download trace
@@ -51,10 +52,10 @@ bash downloadLinux.sh
 bash downloadGCC.sh
 
 # download CouchDB dataset
-python downloadCouchDB.py
+python3 downloadCouchDB.py
 
 # download Gitlab dataset
-python downloadGitlabCE.py
+python3 downloadGitlabCE.py
 ```
 
 ### Exp#1: Trade-off study
@@ -91,7 +92,7 @@ Detection ratio with 3 feature = 0.0000000000
 
 ### Exp#2: Case study of attack detection
 
-We provide a quick way to analyze the detection accuracy and false positive. You can use `runCouch.sh` , `runLinux.sh` , `runGCC.sh`, `runGitlab.sh` to test FeatureSpy with CouchDB, Linux, GCC and Gitlab, respectively. In addition, you can modify the parameters in the scripts to test different window sizes. Here, we use CouchDB as an example.
+We provide a quick way to analyze the detection accuracy and false positive. You can use `runCouch.sh` , `runLinux.sh` , `runGCC.sh`, `runGitlab.sh` to test FeatureSpy with CouchDB, Linux, GCC, and Gitlab, respectively. In addition, you can modify the parameters in the scripts to test different window sizes. Here, we use CouchDB as an example.
 
 **Note that the following script should only be executed when the dataset download has been completed.**
 
@@ -159,7 +160,7 @@ The generated executable file and its required enclave dynamic library, keys are
 
 ### Usage
 
-You can test the prototype in a single machine, and connect the key server, cloud, and client instances via the local loopback interface in `bin` directory. Since the key enclave needs to be attested by the cloud before usage, you need to start the cloud (`server-sgx`) first, then start the key server (`keymanager-sgx`), and wait for the message `KeyServerMain : key server remote attestation done, start to provide service` that indicates a successful attestation. **Currently, we have provided a set of Intel EPID-based remote attestation subscription keys for testing in `./Prototype/config.json`**
+You can test the prototype in a single machine and connect the key server, cloud, and client instances via the local loopback interface in `bin` directory. Since the key enclave needs to be attested by the cloud before usage, you need to start the cloud (`server-sgx`) first, then start the key server (`keymanager-sgx`), and wait for the message `KeyServerMain : key server remote attestation done, start to provide service` that indicates a successful attestation. **Currently, we have provided a set of Intel EPID-based remote attestation subscription keys for testing in `./Prototype/config.json`**
 
 ```shell
 cd Prototype/
@@ -187,4 +188,4 @@ cd bin
 
 ## Detailed Instructions
 
-A detailed configuration of prototype can be found in [Prototype/README.md](Prototype/README.md), and [Simulator/README.md](Simulator/README.md) for simulator.
+A detailed configuration of the prototype can be found in [Prototype/README.md](Prototype/README.md), and [Simulator/README.md](Simulator/README.md) for the simulator.
