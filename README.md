@@ -189,3 +189,7 @@ cd bin
 ## Detailed Instructions
 
 A detailed configuration of the prototype can be found in [Prototype/README.md](Prototype/README.md), and [Simulator/README.md](Simulator/README.md) for the simulator.
+
+## Question
+
+If you have any questions, please feel free to contact <yjren22@cse.cuhk.edu.hk>
