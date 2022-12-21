@@ -1,12 +1,13 @@
 #!/bin/bash
 targetRunningTimes=10 # Total random tests number
-zipfA='1.0'
-snapSize='1024' # Unit: MiB
-swapRatioSet=('0.01') # 'r' in paper 
-windowsSet=('16000') # 'w' in paper 
-modifyPosSet=('2') # 'x' in paper 
-modifylengthSet=('2') # 'y' in paper 
-chunkSize="8192" # Unit: Byte
+zipfA='1.0' # The zipf distribution parameter a.
+chunkSize="8192" # Uint: Byte. The target chunk size.
+snapSize="1024" # Unit: MiB. The snapshot size.
+swapRatioSet=('0.01') # 'r' in paper. Use 'value' 'value' 'value'... to fill in the form, please refer to the text of the paper for specific values. 
+windowsSet=('16000') # 'w' in paper. Use 'value' 'value' 'value'... to fill in the form, please refer to the text of the paper for specific values. 
+modifyPosSet=('2') # 'x' in paper. Use 'value' 'value' 'value'... to fill in the form, please refer to the text of the paper for specific values. 
+modifylengthSet=('2') # 'y' in paper. Use 'value' 'value' 'value'... to fill in the form, please refer to the text of the paper for specific values. 
+
 
 rm -rf SYNFalseResults
 mkdir SYNFalseResults
