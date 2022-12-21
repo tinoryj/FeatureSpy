@@ -1,12 +1,12 @@
 #!/bin/bash
-targetRunningTimes=100 # Total random tests number
+targetRunningTimes=10 # Total random tests number
 zipfA='1.0'
 chunkSize="8192" # Uint: Byte
 snapSize="1024" # Unit: MiB
 windowsSet=('16000') # 'w' in paper 
-modifyPosSet=(2 3 4 5) # 'x' in paper 
-modifylengthSet=('2' '4' '8' '16' '32' '64') # 'y' in paper 
-modifyTimesSet=(1024 1536 2048 2560 3072) # 'n' in paper 
+modifyPosSet=(2) # 'x' in paper 
+modifylengthSet=('2') # 'y' in paper 
+modifyTimesSet=(1024) # 'n' in paper 
 
 rm -rf SYNDetectionResults
 mkdir SYNDetectionResults

@@ -13,11 +13,11 @@ Note that each folder has a separate README file to introduce the detailed build
 
 ## Simulator
 
-The simulator is used to run the experiments in §VI.B in our paper. It includes `SyntheticSnapshots` and `CaseStudy` used for both Exp#1 and Exp#2, respectively. Note that these scripts we provide may need to run several days to complete the full test. If only simple verification is required, please modify them manually to reduce the parameters to be tested in the scripts.
+Our paper uses the simulator to run the experiments in §VI.B. It includes `SyntheticSnapshots` and `CaseStudy` used for both Exp#1 and Exp#2, respectively. Note that it may take more than a week to run the test according to the same settings as the paper. So we simplified the test script, and the simple test can be completed in a few minutes by referring to this README. If you need a full test, please refer to xx.
 
 ### Dependencies
 
-FeatureSpy simulator is developed under Ubuntu 20.04.3 LTS and depends on the following packages that need to be installed by the default `apt` and `pip` package management tools.
+FeatureSpy simulator is developed under Ubuntu 20.04.3 LTS. It depends on the following packages that need to be installed by the default `apt` and `pip` package management tools.
 
 ```shell
 sudo apt install -y build-essential openssl libssl-dev clang llvm python3 curl git golang jq python3-pip
@@ -38,7 +38,7 @@ make clean
 
 ### Trace download
 
-Download Linux, GCC, CouchDB, and Gitlab datasets, respectively, as follows. Note that the snapshots will be downloaded to the `packed-linux`, `packed-gcc`, `packed-couch`, and `packed-gitlab` directories under the `Simulator/traceDownload` directory, respectively.
+We provide the script to download Linux, GCC, CouchDB, and Gitlab datasets, respectively. Note that the snapshots will be downloaded to the `packed-linux`, `packed-gcc`, `packed-couch`, and `packed-gitlab` directories under the `Simulator/traceDownload` directory, respectively.
 
 ```shell
 # download trace
@@ -58,9 +58,21 @@ python3 downloadCouchDB.py
 python3 downloadGitlabCE.py
 ```
 
+For simple and quick testing, you can use the following script to download only one CouchDB snapshot for testing:
+
+```shell
+# download trace
+cd Simulator/traceDownload
+chmod +x *.sh
+
+# download CouchDB sample dataset
+python3 downloadCouchDBSample.py
+
+```
+
 ### Exp#1: Trade-off study
 
-We provide a quick way to analyze the trade-off between detection accuracy and false positive. You can use `runSnapDetection.sh` , `runSnapFalsePositive.sh` to test FeatureSpy's detection ratio and false positive under synthetic snapshots, respectively. Note that you can modify the parameters in the scripts to test different window sizes.
+We provide a quick way to analyze the trade-off between detection accuracy and false positive. You can use `runSnapDetection.sh` , `runSnapFalsePositive.sh` to test FeatureSpy's detection ratio and false positive under synthetic snapshots, respectively. Note that you can modify the parameters in the scripts to test different window sizes, x, y, and r (See our paper for the details of these parameters).
 
 ```txt
 # test with detection ratio or false positive
@@ -92,14 +104,14 @@ Detection ratio with 3 feature = 0.0000000000
 
 ### Exp#2: Case study of attack detection
 
-We provide a quick way to analyze the detection accuracy and false positive. You can use `runCouch.sh` , `runLinux.sh` , `runGCC.sh`, `runGitlab.sh` to test FeatureSpy with CouchDB, Linux, GCC, and Gitlab, respectively. In addition, you can modify the parameters in the scripts to test different window sizes. Here, we use CouchDB as an example.
+We provide a quick way to analyze the detection accuracy and false positive. You can use `runCouch.sh` , `runLinux.sh` , `runGCC.sh`, `runGitlab.sh` to test FeatureSpy with CouchDB, Linux, GCC, and Gitlab, respectively. In addition, you can modify the parameters in the scripts to test different window sizes. Here we use the simplest CouchDB (include only one snapshot download by `python3 downloadCouchDBSample.py` as described in the previous section) for a brief description. See [Simulator/README.md](Simulator/README.md) for the guideline for running the test with the full dataset.
 
 **Note that the following script should only be executed when the dataset download has been completed.**
 
 ```txt
 cd Simulator/scripts
 chmod +x *.sh
-bash runCouch.sh
+bash runCouchSample.sh
 ```
 
 In the running of the scripts, the program processes each snapshot and finally outputs the detection ratio and false positive results in the command line (via `stdout`).
@@ -119,17 +131,17 @@ Detection ratio with 3 feature = 0.0000000000
 
 ## Prototype
 
-The FeatureSpy prototype augments the previous SGX-based encrypted deduplication system [SGXDedup](https://www.usenix.org/conference/atc21/presentation/ren-yanjing) with FeatureSpy, so as to detect the learning-content attack in a client-side trust-execution environment.
+The FeatureSpy prototype augments the previous SGX-based encrypted deduplication system [SGXDedup](https://www.usenix.org/conference/atc21/presentation/ren-yanjing) with FeatureSpy, to detect the learning-content attack in a client-side trust-execution environment.
 
 ### Prerequisites
 
-FeatureSpy prototype is tested on a machine that equips with a Gigabyte B460M-DS3H motherboard and an Intel i7-10700 CPU and runs Ubuntu 20.04.3 LTS.
+FeatureSpy prototype is tested on a machine with a Gigabyte B460M-DS3H motherboard and an Intel i7-10700 CPU and runs Ubuntu 20.04.3 LTS.
 
 Before running the prototype, check if your machine supports SGX. If there is an option such as `SGX` or `Intel Software Guard Extensions` in BIOS, then enable the option; otherwise, your machine does not support SGX. We strongly recommend finding the SGX-supported device in the [SGX hardware list](https://github.com/ayeks/SGX-hardware).
 
 ### Dependencies
 
-We now provide a one-step script to automatically install and configure the dependencies. The script will ask for a password for `sudo` operations if necessary. We have tested the script on Ubuntu 20.04.3 LTS.
+We now provide a one-step script to install and configure the dependencies automatically. If necessary, the script will ask for a password for `sudo` operations. We have tested the script on Ubuntu 20.04.3 LTS.
 
 ```shell
 cd Prototype/
@@ -156,7 +168,7 @@ chmod +x ./scripts/*.sh
 ./scripts/cleanupPrototype.sh
 ```
 
-The generated executable file and its required enclave dynamic library, keys are all stored in the `bin` directory.
+The generated executable file and its required enclave dynamic library keys are all stored in the `bin` directory.
 
 ### Usage
 

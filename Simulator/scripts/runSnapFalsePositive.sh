@@ -1,11 +1,11 @@
 #!/bin/bash
-targetRunningTimes=100 # Total random tests number
+targetRunningTimes=10 # Total random tests number
 zipfA='1.0'
 snapSize='1024' # Unit: MiB
-swapRatioSet=('0.01' '0.0125' '0.015' '0.0175' '0.02') # 'r' in paper 
+swapRatioSet=('0.01') # 'r' in paper 
 windowsSet=('16000') # 'w' in paper 
-modifyPosSet=('2' '3' '4' '5') # 'x' in paper 
-modifylengthSet=('2' '4' '8' '16' '32' '64') # 'y' in paper 
+modifyPosSet=('2') # 'x' in paper 
+modifylengthSet=('2') # 'y' in paper 
 chunkSize="8192" # Unit: Byte
 
 rm -rf SYNFalseResults

@@ -60,7 +60,7 @@ bool getPrefix(u_char** ChunkBufferSet, int chunkNumber, int chunkSize, ofstream
 {
 
     int prefixLength = prefixBlockNumber;
-    //generate prefix
+    // generate prefix
     u_char hash[SHA256_DIGEST_LENGTH];
     u_char content[prefixLength * PREFIX_UNIT];
     memset(hash, 0, SHA256_DIGEST_LENGTH);
@@ -73,7 +73,7 @@ bool getPrefix(u_char** ChunkBufferSet, int chunkNumber, int chunkSize, ofstream
             memcpy(content, ChunkBufferSet[j], prefixLength * PREFIX_UNIT);
             SHA256(content, prefixLength * PREFIX_UNIT, hash);
         }
-        //output
+        // output
         char chunkFPrefixHexBuffer[SHA256_DIGEST_LENGTH * 2 + 1];
         for (int index = 0; index < SHA256_DIGEST_LENGTH; index++) {
             sprintf(chunkFPrefixHexBuffer + 2 * index, "%02X", hash[index]);
@@ -113,7 +113,7 @@ bool getFeaturePrefix(FeatureGen* featureGenObj, u_char* chunkBuffer, int chunkS
         }
         SHA256(baselineFeatureBuffer, i * SHA256_DIGEST_LENGTH, baselineFeatureHashBuffer);
         encryptWithKey(chunkBuffer, chunkSize, baselineFeatureHashBuffer, baselineCipherAll[i - 1]);
-        //out features
+        // out features
         char featureHexBuffer[SHA256_DIGEST_LENGTH * 2 + 1];
         for (int printIndex = 0; printIndex < SHA256_DIGEST_LENGTH; printIndex++) {
             sprintf(featureHexBuffer + 2 * printIndex, "%02X", baselineFeatureHashBuffer[printIndex]);
@@ -196,14 +196,14 @@ int main(int argv, char* argc[])
     srand(stoi(randomSeed));
     // random target chunk
     random_shuffle(targetSwapChunkList.begin(), targetSwapChunkList.end());
-    cerr << "Target total chunk number = " << totalChunkNumber << endl;
+    // cerr << "Target total chunk number = " << totalChunkNumber << endl;
     string swapRatioStr(argc[5]);
     double swapRatio = stod(swapRatioStr);
     int totalSwapChunkNumber = ceil(totalChunkNumber * swapRatio);
     set<int> targetSwapChunkIDSet;
     for (int i = 0; i < totalSwapChunkNumber; i++) {
         targetSwapChunkIDSet.insert(targetSwapChunkList[i]);
-        cerr << targetSwapChunkList[i] << "\t";
+        // cerr << targetSwapChunkList[i] << "\t";
     }
     cerr << endl;
     cerr << "Target swap chunk number = " << targetSwapChunkIDSet.size() << endl;
@@ -233,7 +233,7 @@ int main(int argv, char* argc[])
     chunkInfo.open(fileName + ".swap.chunkInfo", ios::out);
     while (getline(originChunkInfo, currentLineStr)) {
         if (targetSwapChunkIDSet.find(currentChunkID) != targetSwapChunkIDSet.end()) {
-            cerr << "Swap Chunk ID = " << currentChunkID << endl;
+            // cerr << "Swap Chunk ID = " << currentChunkID << endl;
             u_char tempChunk[chunkSize];
             // select modify pos
             vector<int> modifyPosVec;
