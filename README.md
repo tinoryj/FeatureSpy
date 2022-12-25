@@ -96,7 +96,7 @@ For `runSnapFalsePositive.sh`, the following messages will be output after the s
 
 ```txt
 Snapshot size = 1024 MiB, swapped ratio (r) = 0.01, modify pos (x) = 2, modify length (y) = 2
-Detection ratio with 1 feature = 0.0000000000
+Detection ratio with 1 feature = 0.1000000000
 Detection ratio with 2 feature = 0.0000000000
 Detection ratio with 3 feature = 0.0000000000
 ...
@@ -172,7 +172,7 @@ The generated executable file and its required enclave dynamic library keys are 
 
 ### Usage
 
-You can test the prototype in a single machine and connect the key server, cloud, and client instances via the local loopback interface in `bin` directory. Since the key enclave needs to be attested by the cloud before usage, you need to start the cloud (`server-sgx`) first, then start the key server (`keymanager-sgx`), and wait for the message `KeyServerMain : key server remote attestation done, start to provide service` that indicates a successful attestation. **Currently, we have provided a set of Intel EPID-based remote attestation subscription keys for testing in `./Prototype/config.json`**
+You can test the prototype in a single machine and connect the key server, cloud, and client instances via the local loopback interface in `bin` directory. Since the key enclave needs to be attested by the cloud before usage, you need to start the cloud (`server-sgx`) first, then start the key server (`keymanager-sgx`), and wait for the message `KeyServerMain : key server remote attestation done, start to provide service` that indicates a successful attestation. Note that here you need multiple console windows or tabs to start the key server, cloud and client respectively. **Currently, we have provided a set of Intel EPID-based remote attestation subscription keys for testing in `./Prototype/config.json`** However, the embedded certificate may be invalid due to Intel's certificate authority mechanism. At this time, please refer to the registration section in [Prototype README](./Prototype/README.md) to register from the official website of Intel and refer to [Prototype README](./Prototype/README.md) to set the `SPID`, `_PriSubscriptionKey`, and `_SecSubscriptionKey`.
 
 ```shell
 cd Prototype/
@@ -201,6 +201,17 @@ cd bin
 ## Detailed Instructions
 
 A detailed configuration of the prototype can be found in [Prototype/README.md](Prototype/README.md), and [Simulator/README.md](Simulator/README.md) for the simulator.
+
+## FAQs:
+
+1. For prototype, when running the key server or cloud, the ssl certificate may expire. Please use the script provided in `Prototype/key/` to regenerate the ssl certificate. The steps are as follows, and the generated certificate and key are valid for one year.
+
+```shell 
+cd Prototype/key/
+chmod +x *.sh 
+
+./peerVerifySSLKeyGen.sh
+```
 
 ## Question
 

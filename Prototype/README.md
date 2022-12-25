@@ -114,7 +114,7 @@ FeatureSpy is configured based on JSON. You can change its configuration without
 }
 ```
 
-Currently, we provide a set of Intel EPID-based remote attestation subscription keys for testing in `./Prototype/config.json`
+Currently, we provide a set of Intel EPID-based remote attestation subscription keys for testing in `./Prototype/config.json`. However, the embedded certificate may be invalid due to Intel's certificate authority mechanism. At this time, please refer to the registration section to register from the official website of Intel and refer to this document to set the `SPID`, `_PriSubscriptionKey`, and `_SecSubscriptionKey`.
 
 If you need to adjust FeatureSpy's detection indicator length (L), window size (W), and threshold (T), please modify the values of the following parameters in the `./Prototype/include/systemSettings.hpp` file.
 
@@ -158,7 +158,7 @@ Note that the generated executable file and its required enclave dynamic library
 
 ### Usage
 
-You can test FeatureSpy in a single machine and connect the key manager, server, and client instances via the local loopback interface in `bin` directory.
+You can test FeatureSpy in a single machine and connect the key manager, server, and client instances via the local loopback interface in `bin` directory. Note that here you need multiple console windows or tabs to start the key server, cloud and client respectively. 
 
 ```shell
 # start cloud

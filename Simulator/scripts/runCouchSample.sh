@@ -48,6 +48,7 @@ done
 cp -r ../../fakeOfferGen ./
 cd fakeOfferGen
 echo "Generate fake offers"
+chmod +x *.sh
 ./generateFakeOffers.sh
 ./generateFileList.sh ./result fakeFile.fileList
 cp ./fakeFile.fileList ../
