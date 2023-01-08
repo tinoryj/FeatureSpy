@@ -1,5 +1,7 @@
 # FeatureSpy: Detecting Learning-Content Attacks via Feature Inspection in Secure Deduplicated Storage
 
+[![DOI](https://zenodo.org/badge/514726660.svg)](https://zenodo.org/badge/latestdoi/514726660)
+
 ## Introduction
 
 FeatureSpy is a secure deduplicated storage system that effectively detects learning-content attacks based on the observation that such attacks often generate a large volume of similar data.
@@ -10,6 +12,10 @@ This repo contains the implementation of the FeatureSpy prototype and a trace an
 * **./Simulator**: includes a trace analysis tool to measure the detection and false-positive rate of FeatureSpy.
 
 Note that each folder has a separate README file to introduce the detailed build and usage instructions.
+
+## Publication
+
+Jingwei Li, Yanjing Ren, Patrick P. C. Lee, Yuyu Wang, Ting Chen, Xiaosong Zhang. "FeatureSpy: Detecting Learning-Content Attacks via Feature Inspection in Secure Deduplicated Storage." Proceedings of IEEE International Conference on Computer Communications (INFOCOM 2023), New York, US, May 2023.
 
 ## Simulator
 
